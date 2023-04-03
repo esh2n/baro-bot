@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/main.ts"
+    "dev": "ts-node src/main.ts",
+    "compile": "tsc -p .",
+    "start": "node ./dist/main.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,7 @@
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "openai": "^3.2.1",
+    "typescript": "^5.0.3",
     "unofficial-valorant-api": "^2.3.0-stable.0"
   }
 }
