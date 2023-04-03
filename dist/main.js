@@ -9,6 +9,7 @@ const index_2 = require("./lib/openai-api/index");
 const gas_1 = require("./lib/gas");
 const http_1 = __importDefault(require("http"));
 const querystring_1 = __importDefault(require("querystring"));
+require('dotenv').config();
 const client = new discord_js_1.Client({ intents: [discord_js_1.GatewayIntentBits.Guilds] });
 http_1.default.createServer(function (req, res) {
     if (req.method == 'POST') {
@@ -48,8 +49,8 @@ client.on('interactionCreate', async (interaction) => {
             try {
                 const message = interaction.options.getString('message');
                 await interaction.deferReply();
-                (0, gas_1.sendGAS)(message, client);
-                await interaction.editReply({ content: `\n` });
+                await (0, gas_1.sendGAS)(message, client, interaction.user);
+                await interaction.editReply({ content: `\nhoge` });
             }
             catch (error) {
                 console.error(error);

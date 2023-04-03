@@ -6,6 +6,7 @@ import { sendGAS } from './lib/gas';
 import http from 'http';
 import querystring from 'querystring';
 
+require('dotenv').config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -50,8 +51,8 @@ client.on('interactionCreate', async (interaction) => {
         const message = (interaction.options as CommandInteractionOptionResolver).getString('message') as string;
         await interaction.deferReply();
 
-        sendGAS(message, client);
-        await interaction.editReply({ content: `\n`});
+        await sendGAS(message, client, interaction.user);
+        await interaction.editReply({ content: `\nhoge`});
 
       } catch (error) {
         console.error(error);

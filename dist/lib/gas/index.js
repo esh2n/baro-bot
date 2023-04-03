@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendGAS = void 0;
-const sendGAS = (message, client) => {
+const sendGAS = (message, client, user) => {
     var jsonData = {
         events: [
             {
                 type: "discord",
-                name: message.author.username,
+                name: user.username,
                 message: message.content
             }
         ]

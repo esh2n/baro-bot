@@ -1,11 +1,9 @@
-export const sendGAS = (message, client) =>{
-    // LINE Messaging API風の形式に仕立てる(GASでの場合分けが楽になるように)
-    console.log(message)
+export const sendGAS = (message, client, user) =>{
     var jsonData = {
       events: [
         {
           type: "discord",
-          name: message.author.username,
+          name: user.username,
           message: message.content
         }
       ]
