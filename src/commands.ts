@@ -1,6 +1,5 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
-import { DISCORD_BOT_TOKEN, CLIENT_ID } from './secrets';
 
 
 const commands = [
@@ -240,16 +239,16 @@ const commands = [
 ];
 
 (async () => {
-  const rest = new REST({ version: '9' }).setToken(DISCORD_BOT_TOKEN);
+  const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_BOT_TOKEN||'');
 
   try {
     console.log('Started refreshing application (/) commands.');
     if (process.env.GUILD_ID) {
-      await rest.put(Routes.applicationGuildCommands(CLIENT_ID, process.env.GUILD_ID as string), {
+      await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID||'', process.env.GUILD_ID as string), {
         body: commands,
       });
     } else {
-      await rest.put(Routes.applicationCommands(CLIENT_ID), {
+      await rest.put(Routes.applicationCommands(process.env.CLIENT_ID||''), {
         body: commands,
       });
     }

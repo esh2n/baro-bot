@@ -1,4 +1,3 @@
-import { GAS_URL } from "../../secrets";
 
 export const sendGAS = (message, client) =>{
     // LINE Messaging API風の形式に仕立てる(GASでの場合分けが楽になるように)
@@ -12,7 +11,7 @@ export const sendGAS = (message, client) =>{
       ]
     };
     //GAS URLに送る
-    post(message, GAS_URL, jsonData, client);
+    post(message, process.env.GAS_URL||'', jsonData, client);
 }
 
 function post(msg, url, data, client) {

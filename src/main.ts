@@ -1,5 +1,4 @@
 import { Client, CommandInteractionOptionResolver, GatewayIntentBits } from 'discord.js';
-import { DISCORD_BOT_TOKEN } from './secrets';
 import { getEmbedRecentMatchData } from './lib/valorant-api/index';
 import { generateAIResponse, getUserPrompt } from './lib/openai-api/index';
 import { Round, Team } from './lib/openai-api/types';
@@ -161,6 +160,6 @@ client.on('interactionCreate', async (interaction) => {
 
 });
 
-client.login(DISCORD_BOT_TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN||'');
 import './commands'
 
