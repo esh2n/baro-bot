@@ -35,7 +35,7 @@ http.createServer(function(req, res){
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Discord Bot is active now\n');
   }
-}).listen(3000);
+}).listen(process.env.PORT);
 
 client.on('ready', () => {
   console.log('Bot is ready.');
