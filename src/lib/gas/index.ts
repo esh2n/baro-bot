@@ -1,5 +1,6 @@
 export const sendGAS = (message, client) =>{
     // LINE Messaging API風の形式に仕立てる(GASでの場合分けが楽になるように)
+    console.log(message)
     var jsonData = {
       events: [
         {
