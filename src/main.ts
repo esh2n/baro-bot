@@ -3,12 +3,12 @@ import { getEmbedRecentMatchData } from './lib/valorant-api/index';
 import { generateAIResponse, getUserPrompt } from './lib/openai-api/index';
 import { Round, Team } from './lib/openai-api/types';
 import { sendGAS } from './lib/gas';
+import http from 'http';
+import querystring from 'querystring';
 
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-import http from 'http';
-import querystring from 'querystring';
 http.createServer(function(req, res){
   if (req.method == 'POST'){
     let data = "";
@@ -35,7 +35,7 @@ http.createServer(function(req, res){
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Discord Bot is active now\n');
   }
-}).listen(8080);
+}).listen(3000);
 
 client.on('ready', () => {
   console.log('Bot is ready.');

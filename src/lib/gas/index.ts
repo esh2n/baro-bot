@@ -1,4 +1,3 @@
-//@ts-ignore
 export const sendGAS = (message, client) =>{
     // LINE Messaging API風の形式に仕立てる(GASでの場合分けが楽になるように)
     var jsonData = {
@@ -13,7 +12,6 @@ export const sendGAS = (message, client) =>{
     //GAS URLに送る
     post(message, process.env.GAS_URL||'', jsonData, client);
 }
-//@ts-ignore
 function post(msg, url, data, client) {
     //requestモジュールを使う
     var request = require("request");
@@ -24,8 +22,7 @@ function post(msg, url, data, client) {
       followAllRedirects: true
     };
     // postする
-    //@ts-ignore
-    request.post(options, function(error, response, body) {
+    request.post(options, function(error, response, _) {
       if (error != null) {
         msg.reply("更新に失敗しました");
         return;

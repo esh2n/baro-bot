@@ -7,9 +7,9 @@ const discord_js_1 = require("discord.js");
 const index_1 = require("./lib/valorant-api/index");
 const index_2 = require("./lib/openai-api/index");
 const gas_1 = require("./lib/gas");
-const client = new discord_js_1.Client({ intents: [discord_js_1.GatewayIntentBits.Guilds] });
 const http_1 = __importDefault(require("http"));
 const querystring_1 = __importDefault(require("querystring"));
+const client = new discord_js_1.Client({ intents: [discord_js_1.GatewayIntentBits.Guilds] });
 http_1.default.createServer(function (req, res) {
     if (req.method == 'POST') {
         let data = "";
@@ -36,7 +36,7 @@ http_1.default.createServer(function (req, res) {
         res.writeHead(200, { 'Content-Type': 'text/plain' });
         res.end('Discord Bot is active now\n');
     }
-}).listen(8080);
+}).listen(3000);
 client.on('ready', () => {
     console.log('Bot is ready.');
 });

@@ -22,7 +22,7 @@ function post(msg, url, data, client) {
         json: data,
         followAllRedirects: true
     };
-    request.post(options, function (error, response, body) {
+    request.post(options, function (error, response, _) {
         if (error != null) {
             msg.reply("更新に失敗しました");
             return;
