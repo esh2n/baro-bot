@@ -4,7 +4,7 @@ export const sendGAS = (message, client, user) =>{
         {
           type: "discord",
           name: user.username,
-          message: message.content
+          message: message
         }
       ]
     };

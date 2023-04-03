@@ -22,7 +22,8 @@
     "dotenv": "^16.0.3",
     "openai": "^3.2.1",
     "typescript": "^5.0.3",
-    "unofficial-valorant-api": "^2.3.0-stable.0"
+    "unofficial-valorant-api": "^2.3.0-stable.0",
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "@types/node": "^18.15.11"

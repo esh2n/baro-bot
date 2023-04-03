@@ -50,7 +50,7 @@ client.on('interactionCreate', async (interaction) => {
                 const message = interaction.options.getString('message');
                 await interaction.deferReply();
                 await (0, gas_1.sendGAS)(message, client, interaction.user);
-                await interaction.editReply({ content: `\nhoge` });
+                await interaction.editReply({ content: `\nLineにメッセージを送りました。` });
             }
             catch (error) {
                 console.error(error);
