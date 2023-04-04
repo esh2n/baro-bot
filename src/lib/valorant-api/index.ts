@@ -32,22 +32,13 @@ export const getEmbedRecentMatchData = async (name: string, tag: string): Promis
         const rankImage = getRankImageUrl(actualRank);
         imageFiles.push(rankImage);
 
-        const embed = {
-            color: winColor,
-            title: `${agent} ${kills}/${deaths}/${assists} (MMR: ${actualRank})`,
-            url: 'https://discord.js.org',
-            author: {
-                name: `${match.metadata.map} ${isWin}`,
-                icon_url: `attachment://${playerRank}.png`,
-            },
-            thumbnail: {
-                url: `attachment://${agent}.png`,
-            },
-            footer: {
-                text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`,
-                icon_url: 'https://avatars.githubusercontent.com/u/55518345?v=4',
-            },
-        };
+        const embed = new EmbedBuilder()
+        .setTitle(`${agent} ${kills}/${deaths}/${assists} (MMR: ${actualRank})`)
+        .setAuthor({name: `#${index-1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${playerRank}.png`})
+        .setThumbnail(`attachment://${agent}.png`)
+        .setColor(winColor)
+        .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
+
         return embed;
     });
 
