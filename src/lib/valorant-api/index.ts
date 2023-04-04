@@ -5,41 +5,33 @@ import { getRecentMatches, getActualRank } from './getRecentMatches';
 import { Player, MatchResponse, Rank } from './types';
 
 export const getEmbedRecentMatchData = async (name: string, tag: string): Promise<any> => {
-    const [recentMatchesResponse, player, mmr] = await getRecentMatches(name, tag)
-    const imageFiles: Array<AttachmentBuilder> = []
+    try {
+            const [recentMatchesResponse, player, mmr] = await getRecentMatches(name, tag)
+            const imageFiles: Array<AttachmentBuilder> = []
 
-    const recentMatches: Array<EmbedBuilder> = recentMatchesResponse.slice(0, 20).map((match: MatchResponse, index: number) => {
-        const playerInMatch = match.players.all_players.find(p => p.puuid === (player as Player).puuid);
-        const playerRank = playerInMatch?.currenttier_patched as Rank;
+            const recentMatches: Array<EmbedBuilder> = recentMatchesResponse.slice(0, 20).map((match: MatchResponse, index: number) => {
+            const playerInMatch = match.players.all_players.find(p => p.puuid === (player as Player).puuid);
+            const playerRank = playerInMatch?.currenttier_patched as Rank;
 
-        const actualRank = getActualRank(playerRank, mmr)
+            const actualRank = getActualRank(playerRank, mmr)
 
-        if (!playerInMatch) {
-            throw new Error(`Player not found in match #${index + 1}`);
-        }
+            if (!playerInMatch) {
+                throw new Error(`Player not found in match #${index + 1}`);
+            }
 
-        const playerTeam = playerInMatch?.team;
-        const winningTeam = match.teams.red.has_won ? 'Red' : 'Blue';
-        const isWin = playerTeam === winningTeam ? '👍' : '👎';
-        const winColor = isWin === '👍' ? 0x0000ff : 0xff0000;
+            const playerTeam = playerInMatch?.team;
+            const winningTeam = match.teams.red.has_won ? 'Red' : 'Blue';
+            const isWin = playerTeam === winningTeam ? '👍' : '👎';
+            const winColor = isWin === '👍' ? 0x0000ff : 0xff0000;
 
-        const { kills, deaths, assists } = playerInMatch.stats;
-        const agent = playerInMatch.character;
+            const { kills, deaths, assists } = playerInMatch.stats;
+            const agent = playerInMatch.character;
 
-        const agentImage = getAgentImageUrl(agent);
-        imageFiles.push(agentImage);
+            const agentImage = getAgentImageUrl(agent);
+            imageFiles.push(agentImage);
 
-        const rankImage = getRankImageUrl(playerRank);
+            const rankImage = getRankImageUrl(playerRank);
 
-        if (playerRank == "Unrated") {
-            const embed = new EmbedBuilder()
-            .setTitle(`${agent} ${kills}/${deaths}/${assists} (MMR: ${actualRank})`)
-            .setAuthor({name: `#${index+1} ${match.metadata.map} ${isWin}`})
-            .setThumbnail(`attachment://${agent}.png`)
-            .setColor(winColor)
-            .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
-            return embed;
-        } else {
             const rankImageUrl = getRankImageFilename(playerRank)
             imageFiles.push(rankImage);
 
@@ -50,10 +42,15 @@ export const getEmbedRecentMatchData = async (name: string, tag: string): Promis
             .setColor(winColor)
             .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
             return embed;
-        }
-    });
+        });
 
-    return [recentMatches, imageFiles]
+        return [recentMatches, imageFiles]
+
+        } catch (error) {
+            const embed = new EmbedBuilder()
+            .setTitle(`エラーが発生しました。${error}`)
+            return [[embed], ""]
+        }
 }
 
 const getAgentImageUrl = (agentName: string): AttachmentBuilder => {
