@@ -1,8 +1,26 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
+import { ApplicationCommandOption } from 'discord.js';
 
+type RawCommand = {
+  name: string;
+  description: string;
+  options?: ApplicationCommandOption[];
+};
 
-const commands = [
+export const commands: RawCommand[] = [
+    {
+    name: 'baro-ask',
+    description: '「正論パンチくん」とお話ができます。',
+    options: [
+      {
+        name: 'ask',
+        type: 3,
+        description: '問いかけ',
+        required: true,
+      },
+    ],
+  },
   {
     name: 'baro-bo',
     description: 'バロボをします。',
@@ -11,18 +29,6 @@ const commands = [
         name: 'message',
         type: 3,
         description: 'メッセージ',
-        required: true,
-      },
-    ],
-  },
-  {
-    name: 'baro-ask',
-    description: '「正論パンチくん」とお話ができます。',
-    options: [
-      {
-        name: 'ask',
-        type: 3,
-        description: '問いかけ',
         required: true,
       },
     ],
@@ -239,7 +245,7 @@ const commands = [
 ];
 
 (async () => {
-  const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_BOT_TOKEN||'');
+  const rest: REST = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN||'');
 
   try {
     console.log('Started refreshing application (/) commands.');
@@ -256,3 +262,9 @@ const commands = [
     console.error('Error while reloading application (/) commands: ', error);
   }
 })();
+
+
+export { handleBaroBo } from './baro-bo';
+export { handleBaroAsk } from './baro-ask';
+export { handleBaroStats } from './baro-stats';
+export { handleBaroAskTactics } from './baro-ask-tactics';
