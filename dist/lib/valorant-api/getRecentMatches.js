@@ -22,11 +22,15 @@ const getActualRank = (rank, mmr) => {
     if (index === -1) {
         throw new Error("Invalid rank provided.");
     }
-    const tierMmr = 100;
-    const rankMmr = index * tierMmr;
-    const adjustedMmr = mmr + rankMmr;
-    const actualRankIndex = Math.max(0, Math.floor(adjustedMmr / tierMmr));
-    return rankTiers[actualRankIndex];
+    const adjustedMmr = Math.floor(mmr / 10);
+    let adjustedIndex = index + adjustedMmr;
+    if (adjustedIndex < 0) {
+        adjustedIndex = 0;
+    }
+    else if (adjustedIndex > 24) {
+        adjustedIndex = 24;
+    }
+    return rankTiers[adjustedIndex];
 };
 exports.getActualRank = getActualRank;
 const getRankImageFilename = (rank) => {

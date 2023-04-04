@@ -35,7 +35,7 @@ export const getEmbedRecentMatchData = async (name: string, tag: string): Promis
 
         const embed = new EmbedBuilder()
         .setTitle(`${agent} ${kills}/${deaths}/${assists} (MMR: ${actualRank})`)
-        .setAuthor({name: `#${index-1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${rankImageUrl}.png`})
+        .setAuthor({name: `#${index+1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${rankImageUrl}.png`})
         .setThumbnail(`attachment://${agent}.png`)
         .setColor(winColor)
         .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
