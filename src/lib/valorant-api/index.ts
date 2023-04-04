@@ -29,12 +29,13 @@ export const getEmbedRecentMatchData = async (name: string, tag: string): Promis
         const agentImage = getAgentImageUrl(agent);
         imageFiles.push(agentImage);
 
-        const rankImage = getRankImageUrl(actualRank);
+        const rankImage = getRankImageUrl(playerRank);
+        const rankImageUrl = getRankImageFilename(playerRank)
         imageFiles.push(rankImage);
 
         const embed = new EmbedBuilder()
         .setTitle(`${agent} ${kills}/${deaths}/${assists} (MMR: ${actualRank})`)
-        .setAuthor({name: `#${index-1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${playerRank}.png`})
+        .setAuthor({name: `#${index-1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${rankImageUrl}.png`})
         .setThumbnail(`attachment://${agent}.png`)
         .setColor(winColor)
         .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
@@ -62,7 +63,7 @@ export const getRankImageFilename = (rank: Rank): string => {
   const getRankImageUrl = (rank: Rank): AttachmentBuilder => {
     const imagePath = `./assets/rank/${getRankImageFilename(rank)}.png`;
 
-    const attachment = new AttachmentBuilder(fs.readFileSync(imagePath), {name: `${rank}.png`});
+    const attachment = new AttachmentBuilder(fs.readFileSync(imagePath), {name: `${getRankImageFilename(rank)}.png`});
 
     return attachment;
 };
