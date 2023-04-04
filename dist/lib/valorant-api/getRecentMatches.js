@@ -9,7 +9,7 @@ const valorantClient = new unofficial_valorant_api_1.default();
 const getRecentMatches = async (name, tag) => {
     const playerResponse = await valorantClient.getAccount({ name, tag });
     const player = playerResponse.data;
-    const matchHistory = await valorantClient.getMatchesByPUUID({ region: 'ap', puuid: player.puuid });
+    const matchHistory = await valorantClient.getMatchesByPUUID({ region: 'ap', puuid: player.puuid, filter: 'competitive' });
     const mmrResponse = await valorantClient.getMMRByPUUID({ version: 'v2', region: 'ap', puuid: player.puuid });
     const recentMatchesResponse = matchHistory.data;
     const mmr = mmrResponse.data?.current_data.mmr_change_to_last_game;
