@@ -26,26 +26,26 @@ const getEmbedRecentMatchData = async (name, tag) => {
         const agentImage = getAgentImageUrl(agent);
         imageFiles.push(agentImage);
         const rankImage = getRankImageUrl(playerRank);
-        let embed;
         if (playerRank == "Unrated") {
-            embed = new discord_js_1.EmbedBuilder()
+            const embed = new discord_js_1.EmbedBuilder()
                 .setTitle(`${agent} ${kills}/${deaths}/${assists} (MMR: ${actualRank})`)
                 .setAuthor({ name: `#${index + 1} ${match.metadata.map} ${isWin}` })
                 .setThumbnail(`attachment://${agent}.png`)
                 .setColor(winColor)
                 .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
+            return embed;
         }
         else {
             const rankImageUrl = (0, exports.getRankImageFilename)(playerRank);
             imageFiles.push(rankImage);
-            embed = new discord_js_1.EmbedBuilder()
+            const embed = new discord_js_1.EmbedBuilder()
                 .setTitle(`${agent} ${kills}/${deaths}/${assists} (MMR: ${actualRank})`)
                 .setAuthor({ name: `#${index + 1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${rankImageUrl}.png` })
                 .setThumbnail(`attachment://${agent}.png`)
                 .setColor(winColor)
                 .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
+            return embed;
         }
-        return embed;
     });
     return [recentMatches, imageFiles];
 };
