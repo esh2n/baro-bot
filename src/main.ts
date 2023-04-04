@@ -4,39 +4,17 @@ import { generateAIResponse, getUserPrompt } from './lib/openai-api/index';
 import { Round, Team } from './lib/openai-api/types';
 import { sendGAS } from './lib/gas';
 import http from 'http';
-import querystring from 'querystring';
 
 require('dotenv').config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-http.createServer(function(req, res){
-  if (req.method == 'POST'){
-    let data = "";
-    req.on('data', function(chunk){
-      data += chunk;
-    });
-    req.on('end', function(){
-      if(!data){
-        console.log("No post data");
-        res.end();
-        return;
-      }
-      const dataObject = querystring.parse(data);
-      console.log("post:" + dataObject.type);
-      if(dataObject.type == "wake"){
-        console.log("Woke up in post");
-        res.end();
-        return;
-      }
-      res.end();
-    });
-  }
-  else if (req.method == 'GET'){
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Discord Bot is active now\n');
-  }
-}).listen(process.env.PORT);
+http
+.createServer(function(_, response) {
+  response.writeHead(200, { "Content-Type": "text/plain" });
+  response.end("Discord bot is active now \n");
+})
+.listen(process.env.PORT);
 
 client.on('ready', () => {
   console.log('Bot is ready.');
