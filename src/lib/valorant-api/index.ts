@@ -49,7 +49,7 @@ export const getEmbedRecentMatchData = async (name: string, tag: string): Promis
         } catch (error) {
             const embed = new EmbedBuilder()
             .setTitle(`エラーが発生しました。${error}`)
-            return [[embed], ""]
+            return [[embed], []]
         }
 }
 

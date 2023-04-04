@@ -5,15 +5,22 @@ const valorantClient = new ValorantClient();
 
 export const getRecentMatches = async (name: string, tag: string): Promise<any> => {
     try {
-    const playerResponse = await valorantClient.getAccount({name, tag});
-    const player = playerResponse.data as Player;
-    const matchHistory = await valorantClient.getMatchesByPUUID({region: 'ap', puuid: player.puuid, filter: 'competitive'});
-    const mmrResponse = await valorantClient.getMMRByPUUID({version: 'v2', region: 'ap', puuid: player.puuid});
-    const recentMatchesResponse = matchHistory.data as [MatchResponse]
-    const mmr = (mmrResponse as MMRResponse).data?.current_data.mmr_change_to_last_game;
-    return [recentMatchesResponse, player, mmr];
+        const playerResponse = await valorantClient.getAccount({name, tag});
+        const player = playerResponse.data as Player;
+        const matchHistory = await valorantClient.getMatchesByPUUID({region: 'ap', puuid: player.puuid, filter: 'competitive'});
+        const mmrResponse = await valorantClient.getMMRByPUUID({version: 'v2', region: 'ap', puuid: player.puuid});
+        const recentMatchesResponse = matchHistory.data as [MatchResponse]
+        const mmr = (mmrResponse as MMRResponse).data?.current_data.mmr_change_to_last_game;
+
+        recentMatchesResponse.slice(0, 20).map((match: MatchResponse, _: number) => {
+            const playerInMatch = match.players.all_players.find(p => p.puuid === (player as Player).puuid);
+            const playerRank = playerInMatch?.currenttier_patched;
+            console.log(playerRank)
+        })
+        return [recentMatchesResponse, player, mmr];
     }catch (error) {
         console.error(error);
+        return [[], null, null];
     }
 };
 

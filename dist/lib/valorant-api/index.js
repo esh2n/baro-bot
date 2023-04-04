@@ -42,7 +42,7 @@ const getEmbedRecentMatchData = async (name, tag) => {
     catch (error) {
         const embed = new discord_js_1.EmbedBuilder()
             .setTitle(`エラーが発生しました。${error}`);
-        return [[embed], ""];
+        return [[embed], []];
     }
 };
 exports.getEmbedRecentMatchData = getEmbedRecentMatchData;

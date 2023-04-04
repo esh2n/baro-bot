@@ -14,10 +14,16 @@ const getRecentMatches = async (name, tag) => {
         const mmrResponse = await valorantClient.getMMRByPUUID({ version: 'v2', region: 'ap', puuid: player.puuid });
         const recentMatchesResponse = matchHistory.data;
         const mmr = mmrResponse.data?.current_data.mmr_change_to_last_game;
+        recentMatchesResponse.slice(0, 20).map((match, _) => {
+            const playerInMatch = match.players.all_players.find(p => p.puuid === player.puuid);
+            const playerRank = playerInMatch?.currenttier_patched;
+            console.log(playerRank);
+        });
         return [recentMatchesResponse, player, mmr];
     }
     catch (error) {
         console.error(error);
+        return [[], null, null];
     }
 };
 exports.getRecentMatches = getRecentMatches;
