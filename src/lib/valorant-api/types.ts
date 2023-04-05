@@ -87,3 +87,15 @@ interface MMRData {
     error: any;
     url: string;
   }
+
+export interface CrosshairResponse {
+  status: number;
+  data: any;
+  ratelimits: {
+    used: number;
+    remaining: number;
+    reset: number;
+  };
+  error: any;
+  url: string;
+}

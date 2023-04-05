@@ -9,7 +9,7 @@ type RawCommand = {
 };
 
 export const commands: RawCommand[] = [
-    {
+  {
     name: 'baro-ask',
     description: '「正論パンチくん」とお話ができます。',
     options: [
@@ -47,6 +47,18 @@ export const commands: RawCommand[] = [
         name: 'tag',
         type: 3,
         description: 'プレイヤーのタグ',
+        required: true,
+      },
+    ],
+  },
+  {
+    name: 'baro-crosshair',
+    description: 'クロスヘアが表示されます。',
+    options: [
+      {
+        name: 'code',
+        type: 3,
+        description: 'クロスヘアコード',
         required: true,
       },
     ],
@@ -267,4 +279,5 @@ export const commands: RawCommand[] = [
 export { handleBaroBo } from './baro-bo';
 export { handleBaroAsk } from './baro-ask';
 export { handleBaroStats } from './baro-stats';
+export { handleBaroCrosshair } from './baro-crosshair';
 export { handleBaroAskTactics } from './baro-ask-tactics';

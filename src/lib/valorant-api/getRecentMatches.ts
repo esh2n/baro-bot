@@ -1,5 +1,5 @@
 import ValorantClient from 'unofficial-valorant-api';
-import { MatchResponse, MMRResponse, Player, Rank } from './types';
+import { CrosshairResponse, MatchResponse, MMRResponse, Player, Rank } from './types';
 
 const valorantClient = new ValorantClient();
 
@@ -11,12 +11,7 @@ export const getRecentMatches = async (name: string, tag: string): Promise<any> 
         const mmrResponse = await valorantClient.getMMRByPUUID({version: 'v2', region: 'ap', puuid: player.puuid});
         const recentMatchesResponse = matchHistory.data as [MatchResponse]
         const mmr = (mmrResponse as MMRResponse).data?.current_data.mmr_change_to_last_game;
-
-        recentMatchesResponse.slice(0, 20).map((match: MatchResponse, _: number) => {
-            const playerInMatch = match.players.all_players.find(p => p.puuid === (player as Player).puuid);
-            const playerRank = playerInMatch?.currenttier_patched;
-            console.log(playerRank)
-        })
+        console.log(mmrResponse)
         return [recentMatchesResponse, player, mmr];
     }catch (error) {
         console.error(error);
@@ -43,4 +38,14 @@ export const getActualRank = (rank: Rank, mmr: number): Rank => {
 export const getRankImageFilename = (rank: Rank): string => {
   const rankName = rank.replace(" ", "_");
   return `${rankName}_Rank.png`;
+}
+
+export const getCrosshairImageURL = async (code: string, size = 256): Promise<any> => {
+    try {
+        const res = await valorantClient.getCrosshair({code, size}) as CrosshairResponse
+        return res.url || ''
+    } catch (error) {
+        console.error(error);
+        return "";
+    }
 }

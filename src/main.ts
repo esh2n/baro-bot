@@ -1,5 +1,5 @@
 import { CacheType, Client, GatewayIntentBits, Interaction } from 'discord.js';
-import { handleBaroAsk, handleBaroBo, handleBaroStats, handleBaroAskTactics } from './commands';
+import { handleBaroAsk, handleBaroBo, handleBaroStats, handleBaroAskTactics, handleBaroCrosshair } from './commands';
 import http from 'http';
 
 require('dotenv').config();
@@ -30,6 +30,9 @@ client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
       break;
     case 'baro-stats':
       await handleBaroStats(interaction, client)
+      break;
+    case 'baro-crosshair':
+      await handleBaroCrosshair(interaction, client)
       break;
     case 'baro-ask-tactics':
       await handleBaroAskTactics(interaction, client)
