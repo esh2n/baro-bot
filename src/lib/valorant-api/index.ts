@@ -1,19 +1,17 @@
 import { EmbedBuilder, AttachmentBuilder } from 'discord.js'
 import fs from 'fs';
 
-import { getRecentMatches, getActualRank } from './getRecentMatches';
+import { getRecentMatches } from './getRecentMatches';
 import { Player, MatchResponse, Rank } from './types';
 
 export const getEmbedRecentMatchData = async (name: string, tag: string): Promise<any> => {
     try {
-            const [recentMatchesResponse, player, mmr] = await getRecentMatches(name, tag)
+            const [recentMatchesResponse, player] = await getRecentMatches(name, tag)
             const imageFiles: Array<AttachmentBuilder> = []
 
             const recentMatches: Array<EmbedBuilder> = recentMatchesResponse.slice(0, 20).map((match: MatchResponse, index: number) => {
             const playerInMatch = match.players.all_players.find(p => p.puuid === (player as Player).puuid);
             const playerRank = playerInMatch?.currenttier_patched as Rank;
-
-            const actualRank = getActualRank(playerRank, mmr)
 
             if (!playerInMatch) {
                 throw new Error(`Player not found in match #${index + 1}`);
@@ -24,7 +22,10 @@ export const getEmbedRecentMatchData = async (name: string, tag: string): Promis
             const isWin = playerTeam === winningTeam ? '👍' : '👎';
             const winColor = isWin === '👍' ? 0x0000ff : 0xff0000;
 
-            const { kills, deaths, assists } = playerInMatch.stats;
+            const { kills, deaths, assists, headshots, bodyshots, legshots, score } = playerInMatch.stats;
+
+            const headshotPercentage = Math.round((headshots / (headshots + bodyshots + legshots)) * 100);
+
             const agent = playerInMatch.character;
 
             const agentImage = getAgentImageUrl(agent);
@@ -36,7 +37,7 @@ export const getEmbedRecentMatchData = async (name: string, tag: string): Promis
             imageFiles.push(rankImage);
 
             const embed = new EmbedBuilder()
-            .setTitle(`${agent} ${kills}/${deaths}/${assists} (MMR: ${actualRank})`)
+            .setTitle(`${agent} ${kills}/${deaths}/${assists} | HS%: ${headshotPercentage}% | Store: ${score}`)
             .setAuthor({name: `#${index+1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${rankImageUrl}.png`})
             .setThumbnail(`attachment://${agent}.png`)
             .setColor(winColor)

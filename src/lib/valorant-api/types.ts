@@ -21,6 +21,10 @@ type PlayerStats = {
     kills: number;
     deaths: number;
     assists: number;
+    score: number;
+    bodyshots: number;
+    headshots: number;
+    legshots: number;
 };
 
 type Team = {
