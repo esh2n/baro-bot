@@ -6,8 +6,8 @@ import { ApplicationCommandOption, ApplicationCommandOptionChoiceData } from 'di
 import * as grpc from '@grpc/grpc-js'
 import {
   GetAllPlayersRequest,
-} from '@grapevineer/grapevineer_pb'
-import { GrapevineerClient } from '@grapevineer/grapevineer_pb_service'
+} from 'grapevineer/gen/ts/grapevineer/grapevineer_pb'
+import { GrapevineerClient } from 'grapevineer/gen/ts/grapevineer/grapevineer_grpc_pb'
 
 
 type RawCommand = {
@@ -16,14 +16,14 @@ type RawCommand = {
   options?: ApplicationCommandOption[];
 };
 
-const getChoicesForStatsName = (): ApplicationCommandOptionChoiceData<string>[] => {
+const getChoicesForStatsName = async (): Promise<ApplicationCommandOptionChoiceData<string>[]> => {
   const client = new GrapevineerClient(
     'grapevineer-grpc.fly.dev:443',
     grpc.credentials.createInsecure()
   )
-  const choices: ApplicationCommandOptionChoiceData<string>[] = []
+  let choices: ApplicationCommandOptionChoiceData<string>[] = []
   const request = new GetAllPlayersRequest()
-  client.getAllPlayers(request, (err, response) => {
+  await client.getAllPlayers(request, (err, response) => {
     if (err) {
       console.error(err)
       return []
@@ -41,14 +41,14 @@ const getChoicesForStatsName = (): ApplicationCommandOptionChoiceData<string>[] 
   return choices
 }
 
-const getChoicesForStatsID = (): ApplicationCommandOptionChoiceData<string>[] => {
+const getChoicesForStatsID = async (): Promise<ApplicationCommandOptionChoiceData<string>[]> => {
   const client = new GrapevineerClient(
     'grapevineer-grpc.fly.dev:443',
     grpc.credentials.createInsecure()
   )
-  const choices: ApplicationCommandOptionChoiceData<string>[] = []
+  let choices: ApplicationCommandOptionChoiceData<string>[] = []
   const request = new GetAllPlayersRequest()
-  client.getAllPlayers(request, (err, response) => {
+  await client.getAllPlayers(request, (err, response) => {
     if (err) {
       console.error(err)
       return []
@@ -67,9 +67,9 @@ const getChoicesForStatsID = (): ApplicationCommandOptionChoiceData<string>[] =>
 }
 
 
-const getCommands = (): RawCommand[] => {
-  const statsNameChoices = getChoicesForStatsName()
-  const statsIDChoices = getChoicesForStatsID()
+const getCommands = async (): Promise<RawCommand[]> => {
+  const statsNameChoices = await getChoicesForStatsName()
+  const statsIDChoices = await getChoicesForStatsID()
   return [
     {
       name: 'baro-ask',
@@ -322,10 +322,20 @@ const getCommands = (): RawCommand[] => {
 
 }
 
+const waitOneSecond = (): Promise<void> => {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, 1000);
+  });
+}
+
+
 (async () => {
   const rest: REST = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN||'');
-  const commands = getCommands();
   try {
+    const commands = await getCommands();
+    await waitOneSecond()
     console.log('Started refreshing application (/) commands.');
     if (process.env.GUILD_ID) {
       await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID||'', process.env.GUILD_ID as string), {

@@ -31,6 +31,9 @@ client.on('interactionCreate', async (interaction) => {
         case 'baro-stats':
             await (0, commands_1.handleBaroStats)(interaction, client);
             break;
+        case 'baro-crosshair':
+            await (0, commands_1.handleBaroCrosshair)(interaction, client);
+            break;
         case 'baro-ask-tactics':
             await (0, commands_1.handleBaroAskTactics)(interaction, client);
             break;

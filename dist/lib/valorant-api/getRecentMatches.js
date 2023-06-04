@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRankImageFilename = exports.getActualRank = exports.getRecentMatches = void 0;
+exports.getCrosshairImageURL = exports.getRankImageFilename = exports.getActualRank = exports.getRecentMatches = void 0;
 const unofficial_valorant_api_1 = __importDefault(require("unofficial-valorant-api"));
 const valorantClient = new unofficial_valorant_api_1.default();
 const getRecentMatches = async (name, tag) => {
@@ -14,11 +14,6 @@ const getRecentMatches = async (name, tag) => {
         const mmrResponse = await valorantClient.getMMRByPUUID({ version: 'v2', region: 'ap', puuid: player.puuid });
         const recentMatchesResponse = matchHistory.data;
         const mmr = mmrResponse.data?.current_data.mmr_change_to_last_game;
-        recentMatchesResponse.slice(0, 20).map((match, _) => {
-            const playerInMatch = match.players.all_players.find(p => p.puuid === player.puuid);
-            const playerRank = playerInMatch?.currenttier_patched;
-            console.log(playerRank);
-        });
         return [recentMatchesResponse, player, mmr];
     }
     catch (error) {
@@ -49,3 +44,14 @@ const getRankImageFilename = (rank) => {
     return `${rankName}_Rank.png`;
 };
 exports.getRankImageFilename = getRankImageFilename;
+const getCrosshairImageURL = async (code, size = 256) => {
+    try {
+        const res = await valorantClient.getCrosshair({ code, size });
+        return res.url || '';
+    }
+    catch (error) {
+        console.error(error);
+        return "";
+    }
+};
+exports.getCrosshairImageURL = getCrosshairImageURL;
