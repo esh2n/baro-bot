@@ -1,15 +1,39 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleBaroAskTactics = exports.handleBaroCrosshair = exports.handleBaroStats = exports.handleBaroAsk = exports.handleBaroBo = void 0;
 const rest_1 = require("@discordjs/rest");
 const v9_1 = require("discord-api-types/v9");
-const grapevineer_pb_1 = require("@grapevineer/grapevineer_pb");
-const grapevineer_pb_service_1 = require("@grapevineer/grapevineer_pb_service");
-const getChoicesForStatsName = () => {
-    const client = new grapevineer_pb_service_1.GrapevineerClient('grapevineer-grpc.fly.dev:443');
-    const choices = [];
+const grpc = __importStar(require("@grpc/grpc-js"));
+const grapevineer_pb_1 = require("grapevineer/gen/ts/grapevineer/grapevineer_pb");
+const grapevineer_grpc_pb_1 = require("grapevineer/gen/ts/grapevineer/grapevineer_grpc_pb");
+const getChoicesForStatsName = async () => {
+    const client = new grapevineer_grpc_pb_1.GrapevineerClient('grapevineer-grpc.fly.dev:443', grpc.credentials.createInsecure());
+    let choices = [];
     const request = new grapevineer_pb_1.GetAllPlayersRequest();
-    client.getAllPlayers(request, (err, response) => {
+    await client.getAllPlayers(request, (err, response) => {
         if (err) {
             console.error(err);
             return [];
@@ -25,11 +49,11 @@ const getChoicesForStatsName = () => {
     });
     return choices;
 };
-const getChoicesForStatsID = () => {
-    const client = new grapevineer_pb_service_1.GrapevineerClient('grapevineer-grpc.fly.dev:443');
-    const choices = [];
+const getChoicesForStatsID = async () => {
+    const client = new grapevineer_grpc_pb_1.GrapevineerClient('grapevineer-grpc.fly.dev:443', grpc.credentials.createInsecure());
+    let choices = [];
     const request = new grapevineer_pb_1.GetAllPlayersRequest();
-    client.getAllPlayers(request, (err, response) => {
+    await client.getAllPlayers(request, (err, response) => {
         if (err) {
             console.error(err);
             return [];
@@ -45,9 +69,9 @@ const getChoicesForStatsID = () => {
     });
     return choices;
 };
-const getCommands = () => {
-    const statsNameChoices = getChoicesForStatsName();
-    const statsIDChoices = getChoicesForStatsID();
+const getCommands = async () => {
+    const statsNameChoices = await getChoicesForStatsName();
+    const statsIDChoices = await getChoicesForStatsID();
     return [
         {
             name: 'baro-ask',
@@ -289,10 +313,19 @@ const getCommands = () => {
         },
     ];
 };
+const waitOneSecond = () => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, 2000);
+    });
+};
 (async () => {
     const rest = new rest_1.REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN || '');
-    const commands = getCommands();
     try {
+        const commands = await getCommands();
+        console.log(commands);
+        await waitOneSecond();
         console.log('Started refreshing application (/) commands.');
         if (process.env.GUILD_ID) {
             await rest.put(v9_1.Routes.applicationGuildCommands(process.env.CLIENT_ID || '', process.env.GUILD_ID), {

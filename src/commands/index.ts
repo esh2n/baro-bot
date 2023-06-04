@@ -326,7 +326,7 @@ const waitOneSecond = (): Promise<void> => {
   return new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();
-    }, 1000);
+    }, 2000);
   });
 }
 
@@ -335,6 +335,7 @@ const waitOneSecond = (): Promise<void> => {
   const rest: REST = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN||'');
   try {
     const commands = await getCommands();
+    console.log(commands);
     await waitOneSecond()
     console.log('Started refreshing application (/) commands.');
     if (process.env.GUILD_ID) {

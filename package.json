@@ -21,7 +21,7 @@
     "axios": "^1.3.4",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
-    "grapevineer": "github:esh2n/grapevineer#0.0.14",
+    "grapevineer": "github:esh2n/grapevineer#v0.0.14",
     "openai": "^3.2.1",
     "request": "^2.88.2",
     "tsconfig-paths": "^4.2.0",
