@@ -31,8 +31,8 @@ const getChoicesForStatsName = async (): Promise<ApplicationCommandOptionChoiceD
     const players = response!.getPlayersList()
     players.map((player) => {
       const choice: ApplicationCommandOptionChoiceData<string> = {
-        name: player.getName(),
-        value: player.getName(),
+        name: player.getName() + "#" + player.getPlayerId(),
+        value: player.getName() + "#" + player.getPlayerId(),
       }
       choices.push(choice)
     })
@@ -40,36 +40,9 @@ const getChoicesForStatsName = async (): Promise<ApplicationCommandOptionChoiceD
 
   return choices
 }
-
-const getChoicesForStatsID = async (): Promise<ApplicationCommandOptionChoiceData<string>[]> => {
-  const client = new GrapevineerClient(
-    'grapevineer-grpc.fly.dev:443',
-    grpc.credentials.createInsecure()
-  )
-  let choices: ApplicationCommandOptionChoiceData<string>[] = []
-  const request = new GetAllPlayersRequest()
-  await client.getAllPlayers(request, (err, response) => {
-    if (err) {
-      console.error(err)
-      return []
-    }
-    const players = response!.getPlayersList()
-    players.map((player) => {
-      const choice: ApplicationCommandOptionChoiceData<string> = {
-        name: player.getPlayerId(),
-        value: player.getPlayerId(),
-      }
-      choices.push(choice)
-    })
-  })
-
-  return choices
-}
-
 
 const getCommands = async (): Promise<RawCommand[]> => {
   const statsNameChoices = await getChoicesForStatsName()
-  const statsIDChoices = await getChoicesForStatsID()
   return [
     {
       name: 'baro-ask',
@@ -102,17 +75,10 @@ const getCommands = async (): Promise<RawCommand[]> => {
         {
           name: 'playername',
           type: 3,
-          description: 'プレイヤー名',
+          description: 'プレイヤー名#タグ',
           required: true,
           choices: statsNameChoices,
-        },
-        {
-          name: 'tag',
-          type: 3,
-          description: 'プレイヤーのタグ',
-          required: true,
-          choices: statsIDChoices,
-        },
+        }
       ],
     },
     {
@@ -322,11 +288,11 @@ const getCommands = async (): Promise<RawCommand[]> => {
 
 }
 
-const waitOneSecond = (): Promise<void> => {
+const waitSeconds = (second: number): Promise<void> => {
   return new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();
-    }, 2000);
+    }, 1000 * second);
   });
 }
 
@@ -335,8 +301,7 @@ const waitOneSecond = (): Promise<void> => {
   const rest: REST = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN||'');
   try {
     const commands = await getCommands();
-    console.log(commands);
-    await waitOneSecond()
+    await waitSeconds(5)
     console.log('Started refreshing application (/) commands.');
     if (process.env.GUILD_ID) {
       await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID||'', process.env.GUILD_ID as string), {

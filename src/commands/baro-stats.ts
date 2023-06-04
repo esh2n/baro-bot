@@ -3,11 +3,8 @@ import { getEmbedRecentMatchData } from "../lib/valorant-api";
 
 export const handleBaroStats = async (i: CommandInteraction<CacheType>, _: Client<boolean>) => {
 try {
-    const playerName = (i.options as CommandInteractionOptionResolver).getString('playername') as string;
-    let tag = (i.options as CommandInteractionOptionResolver).getString('tag') as string;
-    if (tag.startsWith('#')) {
-        tag = tag.substring(1)
-    }
+    const playerNameWithTag = (i.options as CommandInteractionOptionResolver).getString('playername') as string;
+    const [playerName, tag] = playerNameWithTag.split('#');
 
     await i.deferReply();
     const [recentMatches, agentImageFiles] = await getEmbedRecentMatchData(playerName!, tag!);
