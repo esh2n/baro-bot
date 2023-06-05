@@ -10,8 +10,8 @@ require('dotenv').config();
 const client = new discord_js_1.Client({ intents: [discord_js_1.GatewayIntentBits.Guilds] });
 http_1.default
     .createServer(function (_, response) {
-    response.writeHead(200, { "Content-Type": "text/plain" });
-    response.end("Discord bot is active now \n");
+    response.writeHead(200, { 'Content-Type': 'text/plain' });
+    response.end('Discord bot is active now \n');
 })
     .listen(process.env.PORT);
 client.on('ready', () => {
@@ -22,20 +22,23 @@ client.on('interactionCreate', async (interaction) => {
         return;
     const command = interaction.commandName;
     switch (command) {
-        case 'baro-bo':
-            await (0, commands_1.handleBaroBo)(interaction, client);
+        case 'ask':
+            await new commands_1.Ask().handle(interaction, client);
             break;
-        case 'baro-ask':
-            await (0, commands_1.handleBaroAsk)(interaction, client);
+        case 'ask-tactics':
+            await new commands_1.AskTactics().handle(interaction, client);
             break;
-        case 'baro-stats':
-            await (0, commands_1.handleBaroStats)(interaction, client);
+        case 'bo':
+            await new commands_1.Bo().handle(interaction, client);
             break;
-        case 'baro-crosshair':
-            await (0, commands_1.handleBaroCrosshair)(interaction, client);
+        case 'crosshair':
+            await new commands_1.Crosshair().handle(interaction, client);
             break;
-        case 'baro-ask-tactics':
-            await (0, commands_1.handleBaroAskTactics)(interaction, client);
+        case 'flower-meaning':
+            await new commands_1.FlowerMeaning().handle(interaction, client);
+            break;
+        case 'stats':
+            await new commands_1.Stats().handle(interaction, client);
             break;
         default:
             break;

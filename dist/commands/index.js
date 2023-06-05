@@ -1,331 +1,36 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleBaroAskTactics = exports.handleBaroCrosshair = exports.handleBaroStats = exports.handleBaroAsk = exports.handleBaroBo = void 0;
+exports.Stats = exports.FlowerMeaning = exports.Crosshair = exports.Bo = exports.AskTactics = exports.Ask = void 0;
 const rest_1 = require("@discordjs/rest");
 const v9_1 = require("discord-api-types/v9");
-const grpc = __importStar(require("@grpc/grpc-js"));
-const grapevineer_pb_1 = require("grapevineer/gen/ts/grapevineer/grapevineer_pb");
-const grapevineer_grpc_pb_1 = require("grapevineer/gen/ts/grapevineer/grapevineer_grpc_pb");
-const getChoicesForStatsName = async () => {
-    const client = new grapevineer_grpc_pb_1.GrapevineerClient('grapevineer-grpc.fly.dev:443', grpc.credentials.createInsecure());
-    let choices = [];
-    const request = new grapevineer_pb_1.GetAllPlayersRequest();
-    await client.getAllPlayers(request, (err, response) => {
-        if (err) {
-            console.error(err);
-            return [];
-        }
-        const players = response.getPlayersList();
-        players.map((player) => {
-            const choice = {
-                name: player.getName(),
-                value: player.getName(),
-            };
-            choices.push(choice);
-        });
-    });
-    return choices;
-};
-const getChoicesForStatsID = async () => {
-    const client = new grapevineer_grpc_pb_1.GrapevineerClient('grapevineer-grpc.fly.dev:443', grpc.credentials.createInsecure());
-    let choices = [];
-    const request = new grapevineer_pb_1.GetAllPlayersRequest();
-    await client.getAllPlayers(request, (err, response) => {
-        if (err) {
-            console.error(err);
-            return [];
-        }
-        const players = response.getPlayersList();
-        players.map((player) => {
-            const choice = {
-                name: player.getPlayerId(),
-                value: player.getPlayerId(),
-            };
-            choices.push(choice);
-        });
-    });
-    return choices;
-};
+const ask_1 = require("./ask");
+const ask_tactics_1 = require("./ask-tactics");
+const bo_1 = require("./bo");
+const crosshair_1 = require("./crosshair");
+const stats_1 = require("./stats");
+const flower_meaning_1 = require("./flower-meaning");
 const getCommands = async () => {
-    const statsNameChoices = await getChoicesForStatsName();
-    const statsIDChoices = await getChoicesForStatsID();
     return [
-        {
-            name: 'baro-ask',
-            description: '「正論パンチくん」とお話ができます。',
-            options: [
-                {
-                    name: 'ask',
-                    type: 3,
-                    description: '問いかけ',
-                    required: true,
-                },
-            ],
-        },
-        {
-            name: 'baro-bo',
-            description: 'バロボをします。',
-            options: [
-                {
-                    name: 'message',
-                    type: 3,
-                    description: 'メッセージ',
-                    required: true,
-                },
-            ],
-        },
-        {
-            name: 'baro-stats',
-            description: 'VALORANTの直近20戦の戦績を表示します。',
-            options: [
-                {
-                    name: 'playername',
-                    type: 3,
-                    description: 'プレイヤー名',
-                    required: true,
-                    choices: statsNameChoices,
-                },
-                {
-                    name: 'tag',
-                    type: 3,
-                    description: 'プレイヤーのタグ',
-                    required: true,
-                    choices: statsIDChoices,
-                },
-            ],
-        },
-        {
-            name: 'baro-crosshair',
-            description: 'クロスヘアが表示されます。',
-            options: [
-                {
-                    name: 'code',
-                    type: 3,
-                    description: 'クロスヘアコード',
-                    required: true,
-                },
-            ],
-        },
-        {
-            name: 'baro-ask-tactics',
-            description: '戦術についてAIに質問します。',
-            options: [
-                {
-                    name: 'agent',
-                    type: 3,
-                    description: '使用エージェント',
-                    required: true,
-                    choices: [
-                        {
-                            name: 'ブリムストーン',
-                            value: 'Brimstone',
-                        },
-                        {
-                            name: 'ヴァイパー',
-                            value: 'Viper',
-                        },
-                        {
-                            name: 'オーメン',
-                            value: 'Omen',
-                        },
-                        {
-                            name: 'キルジョイ',
-                            value: 'Killjoy',
-                        },
-                        {
-                            name: 'サイファー',
-                            value: 'Cypher',
-                        },
-                        {
-                            name: 'ソーヴァ',
-                            value: 'Sova',
-                        },
-                        {
-                            name: 'セージ',
-                            value: 'Sage',
-                        },
-                        {
-                            name: 'フェニックス',
-                            value: 'Phoenix',
-                        },
-                        {
-                            name: 'ジェット',
-                            value: 'Jett',
-                        },
-                        {
-                            name: 'レイナ',
-                            value: 'Reyna',
-                        },
-                        {
-                            name: 'レイズ',
-                            value: 'Raze',
-                        },
-                        {
-                            name: 'ブリーチ',
-                            value: 'Breach',
-                        },
-                        {
-                            name: 'スカイ',
-                            value: 'Skye',
-                        },
-                        {
-                            name: 'ヨル',
-                            value: 'Yoru',
-                        },
-                        {
-                            name: 'アストラ',
-                            value: 'Astra',
-                        },
-                        {
-                            name: 'KAY/O',
-                            value: 'KAY/O',
-                        },
-                        {
-                            name: 'チェンバー',
-                            value: 'Chamber',
-                        },
-                        {
-                            name: 'ネオン',
-                            value: 'Neon',
-                        },
-                        {
-                            name: 'フェイド',
-                            value: 'Fade',
-                        },
-                        {
-                            name: 'ハーバー',
-                            value: 'Harbor',
-                        },
-                        {
-                            name: 'ゲッコー',
-                            value: 'Gekko',
-                        },
-                    ]
-                },
-                {
-                    name: 'map',
-                    type: 3,
-                    description: 'マップ',
-                    required: true,
-                    choices: [
-                        {
-                            name: 'アセント(マーケットがある)',
-                            value: 'Ascent',
-                        },
-                        {
-                            name: 'フラクチャー(真ん中にロープがある)',
-                            value: 'Fracture',
-                        },
-                        {
-                            name: 'ヘイヴン(サイトが3つあり、ガレージがある)',
-                            value: 'Haven',
-                        },
-                        {
-                            name: 'アイスボックス(雪だるまがある)',
-                            value: 'Icebox',
-                        },
-                        {
-                            name: 'パール(アートがある)',
-                            value: 'Pearl',
-                        },
-                        {
-                            name: 'スプリット(ベントがある)',
-                            value: 'Split',
-                        },
-                        {
-                            name: 'ロータス(サイトが3つあり、滝がある)',
-                            value: 'Lotus',
-                        },
-                    ]
-                },
-                {
-                    name: 'allied-eco-round',
-                    type: 3,
-                    description: '味方がエコラウンドかどうか',
-                    required: true,
-                    choices: [
-                        {
-                            name: '味方がエコラウンド',
-                            value: 'Eco-Round',
-                        },
-                        {
-                            name: '味方がバイラウンド',
-                            value: 'Buy-Round',
-                        },
-                    ]
-                },
-                {
-                    name: 'enemy-eco-round',
-                    type: 3,
-                    description: '敵がエコラウンドかどうか',
-                    required: true,
-                    choices: [
-                        {
-                            name: '敵がエコラウンド',
-                            value: 'Eco-Round',
-                        },
-                        {
-                            name: '敵がバイラウンド',
-                            value: 'Buy-Round',
-                        },
-                    ]
-                },
-                {
-                    name: 'team',
-                    type: 3,
-                    description: '攻めか守りか',
-                    required: true,
-                    choices: [
-                        {
-                            name: '攻め',
-                            value: 'Attack',
-                        },
-                        {
-                            name: '守り',
-                            value: 'Defense',
-                        },
-                    ]
-                },
-            ],
-        },
+        new ask_1.Ask().command,
+        new ask_tactics_1.AskTactics().command,
+        new bo_1.Bo().command,
+        new crosshair_1.Crosshair().command,
+        new flower_meaning_1.FlowerMeaning().command,
+        new stats_1.Stats().command,
     ];
 };
-const waitOneSecond = () => {
+const waitSeconds = (second) => {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve();
-        }, 2000);
+        }, 1000 * second);
     });
 };
 (async () => {
     const rest = new rest_1.REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN || '');
     try {
         const commands = await getCommands();
-        console.log(commands);
-        await waitOneSecond();
+        await waitSeconds(5);
         console.log('Started refreshing application (/) commands.');
         if (process.env.GUILD_ID) {
             await rest.put(v9_1.Routes.applicationGuildCommands(process.env.CLIENT_ID || '', process.env.GUILD_ID), {
@@ -342,13 +47,15 @@ const waitOneSecond = () => {
         console.error('Error while reloading application (/) commands: ', error);
     }
 })();
-var baro_bo_1 = require("./baro-bo");
-Object.defineProperty(exports, "handleBaroBo", { enumerable: true, get: function () { return baro_bo_1.handleBaroBo; } });
-var baro_ask_1 = require("./baro-ask");
-Object.defineProperty(exports, "handleBaroAsk", { enumerable: true, get: function () { return baro_ask_1.handleBaroAsk; } });
-var baro_stats_1 = require("./baro-stats");
-Object.defineProperty(exports, "handleBaroStats", { enumerable: true, get: function () { return baro_stats_1.handleBaroStats; } });
-var baro_crosshair_1 = require("./baro-crosshair");
-Object.defineProperty(exports, "handleBaroCrosshair", { enumerable: true, get: function () { return baro_crosshair_1.handleBaroCrosshair; } });
-var baro_ask_tactics_1 = require("./baro-ask-tactics");
-Object.defineProperty(exports, "handleBaroAskTactics", { enumerable: true, get: function () { return baro_ask_tactics_1.handleBaroAskTactics; } });
+var ask_2 = require("./ask");
+Object.defineProperty(exports, "Ask", { enumerable: true, get: function () { return ask_2.Ask; } });
+var ask_tactics_2 = require("./ask-tactics");
+Object.defineProperty(exports, "AskTactics", { enumerable: true, get: function () { return ask_tactics_2.AskTactics; } });
+var bo_2 = require("./bo");
+Object.defineProperty(exports, "Bo", { enumerable: true, get: function () { return bo_2.Bo; } });
+var crosshair_2 = require("./crosshair");
+Object.defineProperty(exports, "Crosshair", { enumerable: true, get: function () { return crosshair_2.Crosshair; } });
+var flower_meaning_2 = require("./flower-meaning");
+Object.defineProperty(exports, "FlowerMeaning", { enumerable: true, get: function () { return flower_meaning_2.FlowerMeaning; } });
+var stats_2 = require("./stats");
+Object.defineProperty(exports, "Stats", { enumerable: true, get: function () { return stats_2.Stats; } });
