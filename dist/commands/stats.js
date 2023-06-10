@@ -41,13 +41,6 @@ class Stats {
             },
         ];
     }
-    waitSeconds = (second) => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 1000 * second);
-        });
-    };
     handle = async (i, _) => {
         try {
             const playerNameWithTag = i.options.getString('playername');

@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stats = exports.FlowerMeaning = exports.Crosshair = exports.Bo = exports.AskTactics = exports.Ask = void 0;
 const rest_1 = require("@discordjs/rest");
@@ -9,6 +12,7 @@ const bo_1 = require("./bo");
 const crosshair_1 = require("./crosshair");
 const stats_1 = require("./stats");
 const flower_meaning_1 = require("./flower-meaning");
+const yomiage_1 = __importDefault(require("./yomiage"));
 const getCommands = async () => {
     return [
         new ask_1.Ask().command,
@@ -17,6 +21,7 @@ const getCommands = async () => {
         new crosshair_1.Crosshair().command,
         new flower_meaning_1.FlowerMeaning().command,
         new stats_1.Stats().command,
+        yomiage_1.default.command,
     ];
 };
 const waitSeconds = (second) => {

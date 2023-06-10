@@ -23,13 +23,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFlowerMeaningByDate = exports.getAllPlayers = void 0;
+exports.getWavFromText = exports.getFlowerMeaningByDate = exports.getAllPlayers = void 0;
 const grpc = __importStar(require("@grpc/grpc-js"));
-const grapevineer_grpc_pb_1 = require("grapevineer/gen/ts/grapevineer/grapevineer_grpc_pb");
-const grapevineer_pb_1 = require("grapevineer/gen/ts/grapevineer/grapevineer_pb");
+const grapevineer_grpc_pb_1 = require("grapevineer/gen/ts/v1/grapevineer_grpc_pb");
+const flower_meaning_pb_1 = require("grapevineer/gen/ts/v1/flower_meaning_pb");
+const player_pb_1 = require("grapevineer/gen/ts/v1/player_pb");
+const voicevox_pb_1 = require("grapevineer/gen/ts/v1/voicevox_pb");
 const grpcClient = new grapevineer_grpc_pb_1.GrapevineerClient('grapevineer-grpc.fly.dev:443', grpc.credentials.createInsecure());
 const getAllPlayers = async () => {
-    const request = new grapevineer_pb_1.GetAllPlayersRequest();
+    const request = new player_pb_1.GetAllPlayersRequest();
     let players = [];
     return new Promise((resolve, reject) => {
         grpcClient.getAllPlayers(request, (err, response) => {
@@ -44,7 +46,7 @@ const getAllPlayers = async () => {
 };
 exports.getAllPlayers = getAllPlayers;
 const getFlowerMeaningByDate = async (date) => {
-    const request = new grapevineer_pb_1.GetFlowerMeaningByDateRequest();
+    const request = new flower_meaning_pb_1.GetFlowerMeaningByDateRequest();
     if (date != undefined) {
         request.setDate(date);
     }
@@ -59,3 +61,18 @@ const getFlowerMeaningByDate = async (date) => {
     });
 };
 exports.getFlowerMeaningByDate = getFlowerMeaningByDate;
+const getWavFromText = async (text) => {
+    const request = new voicevox_pb_1.GetWavFromTextRequest();
+    request.setText(text);
+    request.setSpeakerId(1);
+    return new Promise((resolve, reject) => {
+        grpcClient.getWavFromText(request, (err, response) => {
+            if (err || response === null) {
+                console.error(err);
+                reject(null);
+            }
+            resolve(response?.getAudioData_asU8());
+        });
+    });
+};
+exports.getWavFromText = getWavFromText;
