@@ -8,6 +8,7 @@ import { Bo } from './bo'
 import { Crosshair } from './crosshair'
 import { Stats } from './stats'
 import { FlowerMeaning } from './flower-meaning'
+import Yomiage from './yomiage'
 
 export type RawCommand = {
   name: string
@@ -23,6 +24,7 @@ const getCommands = async (): Promise<RawCommand[]> => {
     new Crosshair().command,
     new FlowerMeaning().command,
     new Stats().command,
+    Yomiage.command,
   ]
 }
 

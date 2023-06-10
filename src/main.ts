@@ -7,11 +7,21 @@ import {
   FlowerMeaning,
   Stats,
 } from './commands'
+import Yomiage from './commands/yomiage'
+import { exec } from 'child_process'
 import http from 'http'
 
 require('dotenv').config()
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.MessageContent,
+  ],
+})
 
 http
   .createServer(function (_, response) {
@@ -47,9 +57,35 @@ client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
     case 'stats':
       await new Stats().handle(interaction, client)
       break
+    case 'yomiage':
+      await Yomiage.handle(interaction, client)
+      break
     default:
       break
   }
+})
+
+client.on('messageCreate', async (message) => {
+  if (message.author.bot) {
+    return
+  }
+  if (!Yomiage.connection) {
+    console.log('Not connected to voice channel.')
+    return
+  }
+  const channelId = message.channel.id
+  if (
+    channelId !== '757145883648327758' &&
+    channelId !== '1006967489881718836'
+  ) {
+    return
+  }
+
+  let text = message.content
+  exec('rm audio.wav')
+
+  await Yomiage.writeWavFile(text)
+  await Yomiage.playAudio()
 })
 
 client.login(process.env.DISCORD_BOT_TOKEN || '')

@@ -52,13 +52,6 @@ export class Stats {
     ]
   }
 
-  waitSeconds = (second: number): Promise<void> => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        resolve()
-      }, 1000 * second)
-    })
-  }
   public handle = async (
     i: CommandInteraction<CacheType>,
     _: Client<boolean>

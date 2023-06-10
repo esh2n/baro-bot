@@ -1,11 +1,11 @@
 import * as grpc from '@grpc/grpc-js'
-import { GrapevineerClient } from 'grapevineer/gen/ts/grapevineer/grapevineer_grpc_pb'
+import { GrapevineerClient } from 'grapevineer/gen/ts/v1/grapevineer_grpc_pb'
 import {
-  GetAllPlayersRequest,
   GetFlowerMeaningByDateRequest,
   GetFlowerMeaningByDateResponse,
-  Player,
-} from 'grapevineer/gen/ts/grapevineer/grapevineer_pb'
+} from 'grapevineer/gen/ts/v1/flower_meaning_pb'
+import { GetAllPlayersRequest, Player } from 'grapevineer/gen/ts/v1/player_pb'
+import { GetWavFromTextRequest } from 'grapevineer/gen/ts/v1/voicevox_pb'
 
 const grpcClient = new GrapevineerClient(
   'grapevineer-grpc.fly.dev:443',
@@ -90,3 +90,19 @@ export const getFlowerMeaningByDate = async (date?: string) => {
 //     }
 //   ]
 // }
+
+export const getWavFromText = async (text: string) => {
+  const request = new GetWavFromTextRequest()
+  request.setText(text)
+  request.setSpeakerId(1)
+
+  return new Promise<Uint8Array | null>((resolve, reject) => {
+    grpcClient.getWavFromText(request, (err, response) => {
+      if (err || response === null) {
+        console.error(err)
+        reject(null)
+      }
+      resolve(response?.getAudioData_asU8()!)
+    })
+  })
+}
