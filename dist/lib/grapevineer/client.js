@@ -61,10 +61,10 @@ const getFlowerMeaningByDate = async (date) => {
     });
 };
 exports.getFlowerMeaningByDate = getFlowerMeaningByDate;
-const getWavFromText = async (text) => {
+const getWavFromText = async (text, speakerId) => {
     const request = new voicevox_pb_1.GetWavFromTextRequest();
     request.setText(text);
-    request.setSpeakerId(1);
+    request.setSpeakerId(speakerId);
     return new Promise((resolve, reject) => {
         grpcClient.getWavFromText(request, (err, response) => {
             if (err || response === null) {

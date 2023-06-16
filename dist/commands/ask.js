@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Ask = void 0;
 const openai_api_1 = require("../lib/openai-api");
 class Ask {
+    static instance = null;
     command;
     _rulePrompt;
     constructor() {
@@ -34,6 +34,12 @@ class Ask {
 
     問いかけ:`;
     }
+    static getInstance() {
+        if (!Ask.instance) {
+            Ask.instance = new Ask();
+        }
+        return Ask.instance;
+    }
     handle = async (i, _) => {
         try {
             const prompt = i.options.getString('ask');
@@ -47,4 +53,4 @@ class Ask {
         }
     };
 }
-exports.Ask = Ask;
+exports.default = Ask.getInstance();

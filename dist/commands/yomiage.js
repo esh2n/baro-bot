@@ -12,6 +12,8 @@ class Yomiage {
     player;
     filePath;
     connection;
+    speakerIds = [];
+    userSpeakerMap = new Map();
     constructor() {
         this.command = {
             name: 'yomiage',
@@ -42,10 +44,31 @@ class Yomiage {
         });
         this.filePath = 'audio.wav';
         this.connection = null;
+        this.speakerIds = [
+            0, 1, 8, 9, 10, 40, 34, 13, 14, 17, 20, 21, 25, 27, 30, 42, 45, 46, 48,
+        ];
     }
-    async writeWavFile(text) {
-        const byteData = (await (0, client_1.getWavFromText)(text));
+    async writeWavFile(text, speakerId) {
+        const byteData = (await (0, client_1.getWavFromText)(text, speakerId));
         fs_1.default.writeFileSync(this.filePath, byteData, 'binary');
+    }
+    _getRandomAvailableId() {
+        const usedSpeakerIds = Array.from(this.userSpeakerMap.values());
+        const availableSpeakerIds = this.speakerIds.filter((id) => !usedSpeakerIds.includes(id));
+        const randomIndex = Math.floor(Math.random() * availableSpeakerIds.length);
+        return availableSpeakerIds[randomIndex];
+    }
+    _clearUserSpeakerMap() {
+        this.userSpeakerMap.clear();
+    }
+    setSpeakerIdByUserIdIfNotExist(userId) {
+        const speakerId = this.userSpeakerMap.get(userId);
+        if (!speakerId) {
+            const randomId = this._getRandomAvailableId();
+            this.userSpeakerMap.set(userId, randomId);
+            return randomId;
+        }
+        return speakerId;
     }
     static getInstance() {
         if (!Yomiage.instance) {
@@ -79,6 +102,7 @@ class Yomiage {
                         return;
                     }
                     this._destory();
+                    this._clearUserSpeakerMap();
                     await i.editReply({
                         content: '\n読み上げを終了します。',
                     });
@@ -111,6 +135,7 @@ class Yomiage {
             }
             if (new_state.status == voice_1.VoiceConnectionStatus.Disconnected) {
                 c.destroy();
+                this._clearUserSpeakerMap();
                 this.connection = null;
             }
         });

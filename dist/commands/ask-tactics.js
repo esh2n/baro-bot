@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AskTactics = void 0;
 const openai_api_1 = require("../lib/openai-api");
 class AskTactics {
+    static instance = null;
     command;
     _rulePrompt;
     constructor() {
@@ -214,6 +214,12 @@ class AskTactics {
         * If the question includes "whether it is an eco-round" or "where is the map" or "what agent is used" or "whether it is offensive or defensive", please take this into account.
         `;
     }
+    static getInstance() {
+        if (!AskTactics.instance) {
+            AskTactics.instance = new AskTactics();
+        }
+        return AskTactics.instance;
+    }
     handle = async (i, _) => {
         try {
             const agent = i.options.getString('agent');
@@ -232,4 +238,4 @@ class AskTactics {
         }
     };
 }
-exports.AskTactics = AskTactics;
+exports.default = AskTactics.getInstance();

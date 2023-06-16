@@ -4,8 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const commands_1 = require("./commands");
 const yomiage_1 = __importDefault(require("./commands/yomiage"));
+const stats_1 = __importDefault(require("./commands/stats"));
+const ask_1 = __importDefault(require("./commands/ask"));
+const ask_tactics_1 = __importDefault(require("./commands/ask-tactics"));
+const bo_1 = __importDefault(require("./commands/bo"));
+const crosshair_1 = __importDefault(require("./commands/crosshair"));
+const flower_meaning_1 = __importDefault(require("./commands/flower-meaning"));
 const child_process_1 = require("child_process");
 const http_1 = __importDefault(require("http"));
 require('dotenv').config();
@@ -33,22 +38,22 @@ client.on('interactionCreate', async (interaction) => {
     const command = interaction.commandName;
     switch (command) {
         case 'ask':
-            await new commands_1.Ask().handle(interaction, client);
+            await ask_1.default.handle(interaction, client);
             break;
         case 'ask-tactics':
-            await new commands_1.AskTactics().handle(interaction, client);
+            await ask_tactics_1.default.handle(interaction, client);
             break;
         case 'bo':
-            await new commands_1.Bo().handle(interaction, client);
+            await bo_1.default.handle(interaction, client);
             break;
         case 'crosshair':
-            await new commands_1.Crosshair().handle(interaction, client);
+            await crosshair_1.default.handle(interaction, client);
             break;
         case 'flower-meaning':
-            await new commands_1.FlowerMeaning().handle(interaction, client);
+            await flower_meaning_1.default.handle(interaction, client);
             break;
         case 'stats':
-            await new commands_1.Stats().handle(interaction, client);
+            await stats_1.default.handle(interaction, client);
             break;
         case 'yomiage':
             await yomiage_1.default.handle(interaction, client);
@@ -72,7 +77,9 @@ client.on('messageCreate', async (message) => {
     }
     let text = message.content;
     (0, child_process_1.exec)('rm audio.wav');
-    await yomiage_1.default.writeWavFile(text);
+    const userID = message.author.id;
+    const speakerId = yomiage_1.default.setSpeakerIdByUserIdIfNotExist(userID);
+    await yomiage_1.default.writeWavFile(text, speakerId);
     await yomiage_1.default.playAudio();
 });
 client.login(process.env.DISCORD_BOT_TOKEN || '');

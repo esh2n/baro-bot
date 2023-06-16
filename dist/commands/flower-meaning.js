@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FlowerMeaning = void 0;
 const client_1 = require("../lib/grapevineer/client");
 class FlowerMeaning {
+    static instance = null;
     command;
     constructor() {
         this.command = {
@@ -17,6 +17,12 @@ class FlowerMeaning {
                 },
             ],
         };
+    }
+    static getInstance() {
+        if (!FlowerMeaning.instance) {
+            FlowerMeaning.instance = new FlowerMeaning();
+        }
+        return FlowerMeaning.instance;
     }
     handle = async (i, _) => {
         try {
@@ -33,4 +39,4 @@ class FlowerMeaning {
         }
     };
 }
-exports.FlowerMeaning = FlowerMeaning;
+exports.default = FlowerMeaning.getInstance();

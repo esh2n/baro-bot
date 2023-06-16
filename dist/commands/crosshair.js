@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Crosshair = void 0;
 const getRecentMatches_1 = require("../lib/valorant-api/getRecentMatches");
 class Crosshair {
+    static instance = null;
     command;
     constructor() {
         this.command = {
@@ -18,6 +18,12 @@ class Crosshair {
             ],
         };
     }
+    static getInstance() {
+        if (!Crosshair.instance) {
+            Crosshair.instance = new Crosshair();
+        }
+        return Crosshair.instance;
+    }
     handle = async (i, _) => {
         try {
             const code = i.options.getString('code');
@@ -31,4 +37,4 @@ class Crosshair {
         }
     };
 }
-exports.Crosshair = Crosshair;
+exports.default = Crosshair.getInstance();

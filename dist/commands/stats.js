@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Stats = void 0;
 const valorant_api_1 = require("../lib/valorant-api");
 const client_1 = require("../lib/grapevineer/client");
 class Stats {
+    static instance = null;
     command;
     constructor() {
         this.command = {
@@ -20,6 +20,12 @@ class Stats {
             ],
         };
         this.initialize();
+    }
+    static getInstance() {
+        if (!Stats.instance) {
+            Stats.instance = new Stats();
+        }
+        return Stats.instance;
     }
     async initialize() {
         let choices = [];
@@ -59,4 +65,4 @@ class Stats {
         }
     };
 }
-exports.Stats = Stats;
+exports.default = Stats.getInstance();

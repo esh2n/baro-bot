@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Bo = void 0;
 const gas_1 = require("../lib/gas");
 class Bo {
+    static instance = null;
     command;
     constructor() {
         this.command = {
@@ -18,6 +18,12 @@ class Bo {
             ],
         };
     }
+    static getInstance() {
+        if (!Bo.instance) {
+            Bo.instance = new Bo();
+        }
+        return Bo.instance;
+    }
     handle = async (i, c) => {
         try {
             const message = i.options.getString('message');
@@ -31,4 +37,4 @@ class Bo {
         }
     };
 }
-exports.Bo = Bo;
+exports.default = Bo.getInstance();
