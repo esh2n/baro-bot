@@ -7,7 +7,8 @@ import {
 import { getCrosshairImageURL } from '../lib/valorant-api/getRecentMatches'
 import { RawCommand } from '.'
 
-export class Crosshair {
+class Crosshair {
+  private static instance: Crosshair | null = null
   command: RawCommand
 
   constructor() {
@@ -24,7 +25,12 @@ export class Crosshair {
       ],
     }
   }
-
+  public static getInstance(): Crosshair {
+    if (!Crosshair.instance) {
+      Crosshair.instance = new Crosshair()
+    }
+    return Crosshair.instance
+  }
   public handle = async (
     i: CommandInteraction<CacheType>,
     _: Client<boolean>
@@ -44,3 +50,5 @@ export class Crosshair {
     }
   }
 }
+
+export default Crosshair.getInstance()

@@ -7,7 +7,8 @@ import {
 import { generateAIResponse } from '../lib/openai-api'
 import { RawCommand } from '.'
 
-export class Ask {
+class Ask {
+  private static instance: Ask | null = null
   command: RawCommand
   _rulePrompt: string
   constructor() {
@@ -40,6 +41,13 @@ export class Ask {
     問いかけ:`
   }
 
+  public static getInstance(): Ask {
+    if (!Ask.instance) {
+      Ask.instance = new Ask()
+    }
+    return Ask.instance
+  }
+
   public handle = async (
     i: CommandInteraction<CacheType>,
     _: Client<boolean>
@@ -57,3 +65,5 @@ export class Ask {
     }
   }
 }
+
+export default Ask.getInstance()

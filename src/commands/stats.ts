@@ -9,7 +9,8 @@ import { getEmbedRecentMatchData } from '../lib/valorant-api'
 import { RawCommand } from '.'
 import { getAllPlayers } from '../lib/grapevineer/client'
 
-export class Stats {
+class Stats {
+  private static instance: Stats | null = null
   command: RawCommand
 
   constructor() {
@@ -30,6 +31,12 @@ export class Stats {
     this.initialize()
   }
 
+  public static getInstance(): Stats {
+    if (!Stats.instance) {
+      Stats.instance = new Stats()
+    }
+    return Stats.instance
+  }
   private async initialize() {
     let choices: ApplicationCommandOptionChoiceData<string>[] = []
     const players = await getAllPlayers()
@@ -80,3 +87,5 @@ export class Stats {
     }
   }
 }
+
+export default Stats.getInstance()

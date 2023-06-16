@@ -2,12 +2,12 @@ import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
 import { ApplicationCommandOption } from 'discord.js'
 
-import { Ask } from './ask'
-import { AskTactics } from './ask-tactics'
-import { Bo } from './bo'
-import { Crosshair } from './crosshair'
-import { Stats } from './stats'
-import { FlowerMeaning } from './flower-meaning'
+import Ask from './ask'
+import AskTactics from './ask-tactics'
+import Bo from './bo'
+import Crosshair from './crosshair'
+import FlowerMeaning from './flower-meaning'
+import Stats from './stats'
 import Yomiage from './yomiage'
 
 export type RawCommand = {
@@ -18,12 +18,12 @@ export type RawCommand = {
 
 const getCommands = async (): Promise<RawCommand[]> => {
   return [
-    new Ask().command,
-    new AskTactics().command,
-    new Bo().command,
-    new Crosshair().command,
-    new FlowerMeaning().command,
-    new Stats().command,
+    Ask.command,
+    AskTactics.command,
+    Bo.command,
+    Crosshair.command,
+    FlowerMeaning.command,
+    Stats.command,
     Yomiage.command,
   ]
 }
@@ -63,10 +63,3 @@ const waitSeconds = (second: number): Promise<void> => {
     console.error('Error while reloading application (/) commands: ', error)
   }
 })()
-
-export { Ask } from './ask'
-export { AskTactics } from './ask-tactics'
-export { Bo } from './bo'
-export { Crosshair } from './crosshair'
-export { FlowerMeaning } from './flower-meaning'
-export { Stats } from './stats'

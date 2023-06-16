@@ -7,7 +7,8 @@ import {
 import { RawCommand } from '.'
 import { getFlowerMeaningByDate } from '../lib/grapevineer/client'
 
-export class FlowerMeaning {
+class FlowerMeaning {
+  private static instance: FlowerMeaning | null = null
   command: RawCommand
 
   constructor() {
@@ -23,6 +24,13 @@ export class FlowerMeaning {
         },
       ],
     }
+  }
+
+  public static getInstance(): FlowerMeaning {
+    if (!FlowerMeaning.instance) {
+      FlowerMeaning.instance = new FlowerMeaning()
+    }
+    return FlowerMeaning.instance
   }
   public handle = async (
     i: CommandInteraction<CacheType>,
@@ -46,3 +54,5 @@ export class FlowerMeaning {
     }
   }
 }
+
+export default FlowerMeaning.getInstance()

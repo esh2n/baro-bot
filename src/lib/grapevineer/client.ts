@@ -91,10 +91,10 @@ export const getFlowerMeaningByDate = async (date?: string) => {
 //   ]
 // }
 
-export const getWavFromText = async (text: string) => {
+export const getWavFromText = async (text: string, speakerId: number) => {
   const request = new GetWavFromTextRequest()
   request.setText(text)
-  request.setSpeakerId(1)
+  request.setSpeakerId(speakerId)
 
   return new Promise<Uint8Array | null>((resolve, reject) => {
     grpcClient.getWavFromText(request, (err, response) => {

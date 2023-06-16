@@ -8,7 +8,8 @@ import { generateAIResponse, getUserPrompt } from '../lib/openai-api'
 import { Round, Team } from '../lib/openai-api/types'
 import { RawCommand } from '.'
 
-export class AskTactics {
+class AskTactics {
+  private static instance: AskTactics | null = null
   command: RawCommand
   _rulePrompt: string
 
@@ -231,6 +232,12 @@ export class AskTactics {
         `
   }
 
+  public static getInstance(): AskTactics {
+    if (!AskTactics.instance) {
+      AskTactics.instance = new AskTactics()
+    }
+    return AskTactics.instance
+  }
   public handle = async (
     i: CommandInteraction<CacheType>,
     _: Client<boolean>
@@ -268,3 +275,5 @@ export class AskTactics {
     }
   }
 }
+
+export default AskTactics.getInstance()

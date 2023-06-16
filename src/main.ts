@@ -1,13 +1,11 @@
 import { CacheType, Client, GatewayIntentBits, Interaction } from 'discord.js'
-import {
-  Ask,
-  AskTactics,
-  Bo,
-  Crosshair,
-  FlowerMeaning,
-  Stats,
-} from './commands'
 import Yomiage from './commands/yomiage'
+import Stats from './commands/stats'
+import Ask from './commands/ask'
+import AskTactics from './commands/ask-tactics'
+import Bo from './commands/bo'
+import Crosshair from './commands/crosshair'
+import FlowerMeaning from './commands/flower-meaning'
 import { exec } from 'child_process'
 import http from 'http'
 
@@ -40,22 +38,22 @@ client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
   const command = interaction.commandName
   switch (command) {
     case 'ask':
-      await new Ask().handle(interaction, client)
+      await Ask.handle(interaction, client)
       break
     case 'ask-tactics':
-      await new AskTactics().handle(interaction, client)
+      await AskTactics.handle(interaction, client)
       break
     case 'bo':
-      await new Bo().handle(interaction, client)
+      await Bo.handle(interaction, client)
       break
     case 'crosshair':
-      await new Crosshair().handle(interaction, client)
+      await Crosshair.handle(interaction, client)
       break
     case 'flower-meaning':
-      await new FlowerMeaning().handle(interaction, client)
+      await FlowerMeaning.handle(interaction, client)
       break
     case 'stats':
-      await new Stats().handle(interaction, client)
+      await Stats.handle(interaction, client)
       break
     case 'yomiage':
       await Yomiage.handle(interaction, client)
@@ -64,6 +62,7 @@ client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
       break
   }
 })
+// const userSpeakerMap = new Map<string, number>()
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) {
@@ -84,7 +83,9 @@ client.on('messageCreate', async (message) => {
   let text = message.content
   exec('rm audio.wav')
 
-  await Yomiage.writeWavFile(text)
+  const userID = message.author.id
+  const speakerId = Yomiage.setSpeakerIdByUserIdIfNotExist(userID)
+  await Yomiage.writeWavFile(text, speakerId)
   await Yomiage.playAudio()
 })
 

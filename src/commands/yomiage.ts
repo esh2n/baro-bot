@@ -28,7 +28,8 @@ class Yomiage {
   player: AudioPlayer
   filePath: string
   connection: VoiceConnection | null
-
+  speakerIds: number[] = []
+  userSpeakerMap: Map<string, number> = new Map<string, number>()
   constructor() {
     this.command = {
       name: 'yomiage',
@@ -59,11 +60,36 @@ class Yomiage {
     })
     this.filePath = 'audio.wav'
     this.connection = null
+    this.speakerIds = [
+      0, 1, 8, 9, 10, 40, 34, 13, 14, 17, 20, 21, 25, 27, 30, 42, 45, 46, 48,
+    ]
   }
 
-  public async writeWavFile(text: string) {
-    const byteData = (await getWavFromText(text)) as Uint8Array
+  public async writeWavFile(text: string, speakerId: number) {
+    const byteData = (await getWavFromText(text, speakerId)) as Uint8Array
     fs.writeFileSync(this.filePath, byteData, 'binary')
+  }
+
+  private _getRandomAvailableId() {
+    const usedSpeakerIds = Array.from(this.userSpeakerMap.values())
+    const availableSpeakerIds = this.speakerIds.filter(
+      (id) => !usedSpeakerIds.includes(id)
+    )
+    const randomIndex = Math.floor(Math.random() * availableSpeakerIds.length)
+    return availableSpeakerIds[randomIndex]
+  }
+
+  private _clearUserSpeakerMap() {
+    this.userSpeakerMap.clear()
+  }
+  public setSpeakerIdByUserIdIfNotExist(userId: string) {
+    const speakerId = this.userSpeakerMap.get(userId)
+    if (!speakerId) {
+      const randomId = this._getRandomAvailableId()
+      this.userSpeakerMap.set(userId, randomId)
+      return randomId
+    }
+    return speakerId
   }
 
   public static getInstance(): Yomiage {
@@ -105,6 +131,7 @@ class Yomiage {
             return
           }
           this._destory()
+          this._clearUserSpeakerMap()
           await i.editReply({
             content: '\n読み上げを終了します。',
           })
@@ -140,6 +167,7 @@ class Yomiage {
       }
       if (new_state.status == VoiceConnectionStatus.Disconnected) {
         c.destroy()
+        this._clearUserSpeakerMap()
         this.connection = null
       }
     })

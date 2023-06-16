@@ -7,7 +7,8 @@ import {
 import { sendGAS } from '../lib/gas'
 import { RawCommand } from '.'
 
-export class Bo {
+class Bo {
+  private static instance: Bo | null = null
   command: RawCommand
 
   constructor() {
@@ -23,6 +24,13 @@ export class Bo {
         },
       ],
     }
+  }
+
+  public static getInstance(): Bo {
+    if (!Bo.instance) {
+      Bo.instance = new Bo()
+    }
+    return Bo.instance
   }
 
   public handle = async (
@@ -43,3 +51,5 @@ export class Bo {
     }
   }
 }
+
+export default Bo.getInstance()
