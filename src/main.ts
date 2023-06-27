@@ -1,4 +1,10 @@
-import { CacheType, Client, GatewayIntentBits, Interaction } from 'discord.js'
+import {
+  CacheType,
+  Client,
+  GatewayIntentBits,
+  Interaction,
+  TextChannel,
+} from 'discord.js'
 import Yomiage from './commands/yomiage'
 import Stats from './commands/stats'
 import Ask from './commands/ask'
@@ -87,6 +93,35 @@ client.on('messageCreate', async (message) => {
   const speakerId = Yomiage.setSpeakerIdByUserIdIfNotExist(userID)
   await Yomiage.writeWavFile(text, speakerId)
   await Yomiage.playAudio()
+})
+
+client.on('voiceStateUpdate', (oldState, newState) => {
+  if (newState && oldState) {
+    const textChannel = newState.guild.channels.cache.find(
+      (channel) => channel.name === '募集'
+    )
+    if (oldState.channelId === newState.channelId) {
+      // ミュートなどの動作
+    }
+    if (oldState.channelId === null && newState.channelId != null) {
+      // connect
+      const voiceChannel = newState.channel
+      if (voiceChannel!.members.size === 1) {
+        // VCに1人だけいる場合
+        const vcName = voiceChannel!.name
+        if (vcName === 'VALORANT' || vcName === '雑談') {
+          ;(textChannel as TextChannel).send(
+            `@VALORANT ${
+              newState!.member!.nickname || newState!.member!.user.username
+            }さんがVC「${vcName}」であなたを待っています。可哀想なので参加してあげましょう。`
+          )
+        }
+      }
+    }
+    if (oldState.channelId != null && newState.channelId === null) {
+      // disconnect
+    }
+  }
 })
 
 client.login(process.env.DISCORD_BOT_TOKEN || '')

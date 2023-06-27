@@ -82,5 +82,24 @@ client.on('messageCreate', async (message) => {
     await yomiage_1.default.writeWavFile(text, speakerId);
     await yomiage_1.default.playAudio();
 });
+client.on('voiceStateUpdate', (oldState, newState) => {
+    if (newState && oldState) {
+        const textChannel = newState.guild.channels.cache.find((channel) => channel.name === '募集');
+        if (oldState.channelId === newState.channelId) {
+        }
+        if (oldState.channelId === null && newState.channelId != null) {
+            const voiceChannel = newState.channel;
+            if (voiceChannel.members.size === 1) {
+                const vcName = voiceChannel.name;
+                if (vcName === 'VALORANT' || vcName === '雑談') {
+                    ;
+                    textChannel.send(`@VALORANT ${newState.member.nickname || newState.member.user.username}さんがVC「${vcName}」であなたを待っています。可哀想なので参加してあげましょう。`);
+                }
+            }
+        }
+        if (oldState.channelId != null && newState.channelId === null) {
+        }
+    }
+});
 client.login(process.env.DISCORD_BOT_TOKEN || '');
 require("./commands");
