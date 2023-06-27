@@ -13,6 +13,7 @@ const crosshair_1 = __importDefault(require("./commands/crosshair"));
 const flower_meaning_1 = __importDefault(require("./commands/flower-meaning"));
 const child_process_1 = require("child_process");
 const http_1 = __importDefault(require("http"));
+const node_cron_1 = __importDefault(require("node-cron"));
 require('dotenv').config();
 const client = new discord_js_1.Client({
     intents: [
@@ -31,6 +32,44 @@ http_1.default
     .listen(process.env.PORT);
 client.on('ready', () => {
     console.log('Bot is ready.');
+    const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
+    if (textChannel) {
+        node_cron_1.default.schedule('0 10 * * *', () => {
+            const emojiSets = [
+                ['🐢', '🐍', '🦎', '🐊'],
+                ['🐬', '🐳', '🐠', '🐙'],
+                ['🙈', '🙉', '🙊', '🐒'],
+                ['🦁', '🐯', '🐅', '🐆'],
+                ['🦉', '🦅', '🦆', '🐧'],
+                ['🌳', '🍁', '🍄', '🌰'],
+                ['⭐️', '🌙', '☀️', '☁️'],
+                ['🍎', '🍌', '🍇', '🍓'],
+                ['🥦', '🥕', '🌽', '🍅'],
+                ['💖', '💙', '💚', '💛'],
+                ['🎸', '🎷', '🥁', '🎻'],
+                ['⚽️', '🏀', '🏈', '⚾️'],
+                ['🍵', '🍶', '🍷', '🍺'],
+                ['🚗', '✈️', '🚀', '⛵️'],
+                ['🏞', '🌆', '🏝', '🌉'],
+                ['🎂', '🍦', '🍪', '🍩'],
+                ['🎈', '🎁', '🎉', '🎊'],
+                ['📚', '✏️', '🎓', '🔬'],
+                ['💡', '💻', '📱', '⌚️'],
+                ['🎭', '🎨', '🎬', '🎤']
+            ];
+            const randomEmojiSet = emojiSets[Math.floor(Math.random() * emojiSets.length)];
+            textChannel.send(`よるぼ！\n1930〜 ${randomEmojiSet[0]}\n2000〜${randomEmojiSet[1]}\n2030〜${randomEmojiSet[2]}\n2100〜${randomEmojiSet[3]}`)
+                .then(message => {
+                message.react(randomEmojiSet[0]);
+                message.react(randomEmojiSet[1]);
+                message.react(randomEmojiSet[2]);
+                message.react(randomEmojiSet[3]);
+            });
+        }, {
+            scheduled: true,
+            timezone: 'Asia/Tokyo',
+        });
+    }
 });
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand())
@@ -84,7 +123,7 @@ client.on('messageCreate', async (message) => {
 });
 client.on('voiceStateUpdate', (oldState, newState) => {
     if (newState && oldState) {
-        const textChannel = newState.guild.channels.cache.find((channel) => channel.name === '募集');
+        const textChannel = newState.guild.channels.cache.find((channel) => channel.id === '1006967319676846130');
         if (oldState.channelId === newState.channelId) {
         }
         if (oldState.channelId === null && newState.channelId != null) {

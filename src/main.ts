@@ -14,6 +14,7 @@ import Crosshair from './commands/crosshair'
 import FlowerMeaning from './commands/flower-meaning'
 import { exec } from 'child_process'
 import http from 'http'
+import cron from 'node-cron'
 
 require('dotenv').config()
 
@@ -34,9 +35,53 @@ http
   })
   .listen(process.env.PORT)
 
-client.on('ready', () => {
-  console.log('Bot is ready.')
-})
+  client.on('ready', () => {
+    console.log('Bot is ready.');
+
+    const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
+
+    if (textChannel) {
+        // 毎日10時に実行
+        cron.schedule('0 10 * * *', () => {
+            const emojiSets = [
+                ['🐢', '🐍', '🦎', '🐊'],
+                ['🐬', '🐳', '🐠', '🐙'],
+                ['🙈', '🙉', '🙊', '🐒'],
+                ['🦁', '🐯', '🐅', '🐆'],
+                ['🦉', '🦅', '🦆', '🐧'],
+                ['🌳', '🍁', '🍄', '🌰'],
+                ['⭐️', '🌙', '☀️', '☁️'],
+                ['🍎', '🍌', '🍇', '🍓'],
+                ['🥦', '🥕', '🌽', '🍅'],
+                ['💖', '💙', '💚', '💛'],
+                ['🎸', '🎷', '🥁', '🎻'],
+                ['⚽️', '🏀', '🏈', '⚾️'],
+                ['🍵', '🍶', '🍷', '🍺'],
+                ['🚗', '✈️', '🚀', '⛵️'],
+                ['🏞', '🌆', '🏝', '🌉'],
+                ['🎂', '🍦', '🍪', '🍩'],
+                ['🎈', '🎁', '🎉', '🎊'],
+                ['📚', '✏️', '🎓', '🔬'],
+                ['💡', '💻', '📱', '⌚️'],
+                ['🎭', '🎨', '🎬', '🎤']
+            ];
+
+            // ランダムに絵文字セットを選択
+            const randomEmojiSet = emojiSets[Math.floor(Math.random() * emojiSets.length)];
+
+            (textChannel as TextChannel).send(`よるぼ！\n1930〜 ${randomEmojiSet[0]}\n2000〜${randomEmojiSet[1]}\n2030〜${randomEmojiSet[2]}\n2100〜${randomEmojiSet[3]}`)
+            .then(message => {
+                message.react(randomEmojiSet[0]);
+                message.react(randomEmojiSet[1]);
+                message.react(randomEmojiSet[2]);
+                message.react(randomEmojiSet[3]);
+            });
+        }, {
+            scheduled: true,
+            timezone: 'Asia/Tokyo',
+        });
+    }
+});
 
 client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
   if (!interaction.isCommand()) return
@@ -98,7 +143,7 @@ client.on('messageCreate', async (message) => {
 client.on('voiceStateUpdate', (oldState, newState) => {
   if (newState && oldState) {
     const textChannel = newState.guild.channels.cache.find(
-      (channel) => channel.name === '募集'
+      (channel) => channel.id === '1006967319676846130'
     )
     if (oldState.channelId === newState.channelId) {
       // ミュートなどの動作
