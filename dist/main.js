@@ -30,41 +30,18 @@ http_1.default
     response.end('Discord bot is active now \n');
 })
     .listen(process.env.PORT);
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log('Bot is ready.');
     const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
     if (textChannel) {
-        node_cron_1.default.schedule('0 10 * * *', () => {
-            const emojiSets = [
-                ['🐢', '🐍', '🦎', '🐊'],
-                ['🐬', '🐳', '🐠', '🐙'],
-                ['🙈', '🙉', '🙊', '🐒'],
-                ['🦁', '🐯', '🐅', '🐆'],
-                ['🦉', '🦅', '🦆', '🐧'],
-                ['🌳', '🍁', '🍄', '🌰'],
-                ['⭐️', '🌙', '☀️', '☁️'],
-                ['🍎', '🍌', '🍇', '🍓'],
-                ['🥦', '🥕', '🌽', '🍅'],
-                ['💖', '💙', '💚', '💛'],
-                ['🎸', '🎷', '🥁', '🎻'],
-                ['⚽️', '🏀', '🏈', '⚾️'],
-                ['🍵', '🍶', '🍷', '🍺'],
-                ['🚗', '✈️', '🚀', '⛵️'],
-                ['🏞', '🌆', '🏝', '🌉'],
-                ['🎂', '🍦', '🍪', '🍩'],
-                ['🎈', '🎁', '🎉', '🎊'],
-                ['📚', '✏️', '🎓', '🔬'],
-                ['💡', '💻', '📱', '⌚️'],
-                ['🎭', '🎨', '🎬', '🎤']
-            ];
-            const randomEmojiSet = emojiSets[Math.floor(Math.random() * emojiSets.length)];
-            textChannel.send(`よるぼ！\n1930〜 ${randomEmojiSet[0]}\n2000〜${randomEmojiSet[1]}\n2030〜${randomEmojiSet[2]}\n2100〜${randomEmojiSet[3]}`)
-                .then(message => {
-                message.react(randomEmojiSet[0]);
-                message.react(randomEmojiSet[1]);
-                message.react(randomEmojiSet[2]);
-                message.react(randomEmojiSet[3]);
-            });
+        node_cron_1.default.schedule('0 10 * * 1-5', async () => {
+            bo_1.default.bo(textChannel, "夜");
+        }, {
+            scheduled: true,
+            timezone: 'Asia/Tokyo',
+        });
+        node_cron_1.default.schedule('0 10 * * 0,6', async () => {
+            bo_1.default.bo(textChannel, "終日");
         }, {
             scheduled: true,
             timezone: 'Asia/Tokyo',
@@ -105,6 +82,9 @@ client.on('messageCreate', async (message) => {
     if (message.author.bot) {
         return;
     }
+    if (message.content === '!よるぼ') {
+        bo_1.default.bo(message.channel, "夜");
+    }
     if (!yomiage_1.default.connection) {
         console.log('Not connected to voice channel.');
         return;
@@ -122,6 +102,9 @@ client.on('messageCreate', async (message) => {
     await yomiage_1.default.playAudio();
 });
 client.on('voiceStateUpdate', (oldState, newState) => {
+    if (newState.member?.user.bot) {
+        return;
+    }
     if (newState && oldState) {
         const textChannel = newState.guild.channels.cache.find((channel) => channel.id === '1006967319676846130');
         if (oldState.channelId === newState.channelId) {

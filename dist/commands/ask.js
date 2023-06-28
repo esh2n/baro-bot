@@ -40,11 +40,15 @@ class Ask {
         }
         return Ask.instance;
     }
+    generateText = async (prompt) => {
+        const answer = await (0, openai_api_1.generateAIResponse)(prompt, this._rulePrompt);
+        return answer;
+    };
     handle = async (i, _) => {
         try {
             const prompt = i.options.getString('ask');
             await i.deferReply();
-            const answer = await (0, openai_api_1.generateAIResponse)(prompt, this._rulePrompt);
+            const answer = await this.generateText(prompt);
             await i.editReply({ content: `\n${prompt}\n${answer}` });
         }
         catch (error) {

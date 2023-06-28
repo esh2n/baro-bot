@@ -48,6 +48,11 @@ class Ask {
     return Ask.instance
   }
 
+  public generateText = async (prompt: string): Promise<string> => {
+    const answer = await generateAIResponse(prompt, this._rulePrompt)
+    return answer
+  }
+
   public handle = async (
     i: CommandInteraction<CacheType>,
     _: Client<boolean>
@@ -57,7 +62,7 @@ class Ask {
         'ask'
       ) as string
       await i.deferReply()
-      const answer = await generateAIResponse(prompt, this._rulePrompt)
+      const answer = await this.generateText(prompt)
       await i.editReply({ content: `\n${prompt}\n${answer}` })
     } catch (error) {
       console.error(error)

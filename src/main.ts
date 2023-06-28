@@ -35,47 +35,22 @@ http
   })
   .listen(process.env.PORT)
 
-  client.on('ready', () => {
+  client.on('ready', async () => {
     console.log('Bot is ready.');
 
     const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
 
     if (textChannel) {
-        // 毎日10時に実行
-        cron.schedule('0 10 * * *', () => {
-            const emojiSets = [
-                ['🐢', '🐍', '🦎', '🐊'],
-                ['🐬', '🐳', '🐠', '🐙'],
-                ['🙈', '🙉', '🙊', '🐒'],
-                ['🦁', '🐯', '🐅', '🐆'],
-                ['🦉', '🦅', '🦆', '🐧'],
-                ['🌳', '🍁', '🍄', '🌰'],
-                ['⭐️', '🌙', '☀️', '☁️'],
-                ['🍎', '🍌', '🍇', '🍓'],
-                ['🥦', '🥕', '🌽', '🍅'],
-                ['💖', '💙', '💚', '💛'],
-                ['🎸', '🎷', '🥁', '🎻'],
-                ['⚽️', '🏀', '🏈', '⚾️'],
-                ['🍵', '🍶', '🍷', '🍺'],
-                ['🚗', '✈️', '🚀', '⛵️'],
-                ['🏞', '🌆', '🏝', '🌉'],
-                ['🎂', '🍦', '🍪', '🍩'],
-                ['🎈', '🎁', '🎉', '🎊'],
-                ['📚', '✏️', '🎓', '🔬'],
-                ['💡', '💻', '📱', '⌚️'],
-                ['🎭', '🎨', '🎬', '🎤']
-            ];
-
-            // ランダムに絵文字セットを選択
-            const randomEmojiSet = emojiSets[Math.floor(Math.random() * emojiSets.length)];
-
-            (textChannel as TextChannel).send(`よるぼ！\n1930〜 ${randomEmojiSet[0]}\n2000〜${randomEmojiSet[1]}\n2030〜${randomEmojiSet[2]}\n2100〜${randomEmojiSet[3]}`)
-            .then(message => {
-                message.react(randomEmojiSet[0]);
-                message.react(randomEmojiSet[1]);
-                message.react(randomEmojiSet[2]);
-                message.react(randomEmojiSet[3]);
-            });
+      // 平日10時に実行
+        cron.schedule('0 10 * * 1-5', async () => {
+          Bo.bo(textChannel as TextChannel, "夜");
+        }, {
+            scheduled: true,
+            timezone: 'Asia/Tokyo',
+        })
+        // 土日10時に実行
+        cron.schedule('0 10 * * 0,6', async () => {
+          Bo.bo(textChannel as TextChannel, "終日");
         }, {
             scheduled: true,
             timezone: 'Asia/Tokyo',
@@ -113,11 +88,13 @@ client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
       break
   }
 })
-// const userSpeakerMap = new Map<string, number>()
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) {
     return
+  }
+  if (message.content === '!よるぼ') {
+    Bo.bo(message.channel as TextChannel, "夜");
   }
   if (!Yomiage.connection) {
     console.log('Not connected to voice channel.')
@@ -141,6 +118,10 @@ client.on('messageCreate', async (message) => {
 })
 
 client.on('voiceStateUpdate', (oldState, newState) => {
+  // botの場合は無視
+  if (newState.member?.user.bot) {
+    return
+  }
   if (newState && oldState) {
     const textChannel = newState.guild.channels.cache.find(
       (channel) => channel.id === '1006967319676846130'

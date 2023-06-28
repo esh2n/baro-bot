@@ -3,9 +3,12 @@ import {
   Client,
   CommandInteraction,
   CommandInteractionOptionResolver,
+  TextChannel,
 } from 'discord.js'
 import { sendGAS } from '../lib/gas'
 import { RawCommand } from '.'
+import Ask from './ask'
+import { Time } from '../lib/openai-api/types'
 
 class Bo {
   private static instance: Bo | null = null
@@ -49,6 +52,48 @@ class Bo {
       console.error(error)
       await i.reply('エラーが発生しました。')
     }
+  }
+
+  public bo = async (textChannel: TextChannel, time: Time) => {
+    const emojiSets = [
+      ["🐢", "🐍", "🦎", "🐊"],
+      ["🐬", "🐳", "🐠", "🐙"],
+      ["🙈", "🙉", "🙊", "🐒"],
+      ["🦁", "🐯", "🐅", "🐆"],
+      ["🦉", "🦅", "🦆", "🐧"],
+      ["🌳", "🍁", "🍄", "🌰"],
+      ["⭐️", "🌙", "☀️", "☁️"],
+      ["🍎", "🍌", "🍇", "🍓"],
+      ["🥦", "🥕", "🌽", "🍅"],
+      ["💖", "💙", "💚", "💛"],
+      ["🎸", "🎷", "🥁", "🎻"],
+      ["⚽️", "🏀", "🏈", "⚾️"],
+      ["🍵", "🍶", "🍷", "🍺"],
+      ["🚗", "✈️", "🚀", "⛵️"],
+      ["🏞", "🌆", "🏝", "🌉"],
+      ["🎂", "🍦", "🍪", "🍩"],
+      ["🎈", "🎁", "🎉", "🎊"],
+      ["📚", "✏️", "🎓", "🔬"],
+      ["💡", "💻", "📱", "⌚️"],
+      ["🎭", "🎨", "🎬", "🎤"],
+    ]
+
+    // ランダムに絵文字セットを選択
+    const randomEmojiSet =
+      emojiSets[Math.floor(Math.random() * emojiSets.length)]
+    const text = await Ask.generateText(
+      `${time}にVALORANTを募集する文を作ってください。`
+    )
+    ;(textChannel as TextChannel)
+      .send(
+        `${text}\n1930〜 ${randomEmojiSet[0]}\n2000〜${randomEmojiSet[1]}\n2030〜${randomEmojiSet[2]}\n2100〜${randomEmojiSet[3]}`
+      )
+      .then((message) => {
+        message.react(randomEmojiSet[0])
+        message.react(randomEmojiSet[1])
+        message.react(randomEmojiSet[2])
+        message.react(randomEmojiSet[3])
+      })
   }
 }
 
