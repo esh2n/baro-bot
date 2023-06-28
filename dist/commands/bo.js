@@ -40,7 +40,7 @@ class Bo {
             await i.reply('エラーが発生しました。');
         }
     };
-    bo = async (textChannel, time) => {
+    bo = async (textChannel, time, c) => {
         const emojiSets = [
             ["🐢", "🐍", "🦎", "🐊"],
             ["🐬", "🐳", "🐠", "🐙"],
@@ -66,12 +66,25 @@ class Bo {
         const randomEmojiSet = emojiSets[Math.floor(Math.random() * emojiSets.length)];
         const text = await ask_1.default.generateText(`${time}にVALORANTを募集する文を作ってください。`);
         textChannel
-            .send(`${text}\n1930〜 ${randomEmojiSet[0]}\n2000〜${randomEmojiSet[1]}\n2030〜${randomEmojiSet[2]}\n2100〜${randomEmojiSet[3]}`)
+            .send(`${text}\n1930〜 ${randomEmojiSet[0]}\n2000〜${randomEmojiSet[1]}\n2030〜${randomEmojiSet[2]}\n2100〜${randomEmojiSet[3]}\n\nあと5人！`)
             .then((message) => {
             message.react(randomEmojiSet[0]);
             message.react(randomEmojiSet[1]);
             message.react(randomEmojiSet[2]);
             message.react(randomEmojiSet[3]);
+            let participants = new Set();
+            const filter = (reaction, user) => {
+                return (randomEmojiSet.includes(reaction.emoji.name) &&
+                    user.id !== c.user.id);
+            };
+            const collector = message.createReactionCollector({ filter });
+            collector.on('collect', (_, user) => {
+                participants.add(user.id);
+                const remaining = 5 - participants.size;
+                if (remaining >= 0) {
+                    message.edit(`${text}\n1930〜 ${randomEmojiSet[0]}\n2000〜${randomEmojiSet[1]}\n2030〜${randomEmojiSet[2]}\n2100〜${randomEmojiSet[3]}\n\nあと${remaining}人`);
+                }
+            });
         });
     };
 }

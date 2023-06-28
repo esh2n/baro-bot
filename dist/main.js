@@ -13,6 +13,7 @@ const crosshair_1 = __importDefault(require("./commands/crosshair"));
 const flower_meaning_1 = __importDefault(require("./commands/flower-meaning"));
 const child_process_1 = require("child_process");
 const http_1 = __importDefault(require("http"));
+const node_cron_1 = __importDefault(require("node-cron"));
 require('dotenv').config();
 const client = new discord_js_1.Client({
     intents: [
@@ -31,6 +32,21 @@ http_1.default
     .listen(process.env.PORT);
 client.on('ready', async () => {
     console.log('Bot is ready.');
+    const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
+    if (textChannel) {
+        node_cron_1.default.schedule('0 9 * * 1-5', async () => {
+            bo_1.default.bo(textChannel, "夜", client);
+        }, {
+            scheduled: true,
+            timezone: 'Asia/Tokyo',
+        });
+        node_cron_1.default.schedule('0 9 * * 0,6', async () => {
+            bo_1.default.bo(textChannel, "終日", client);
+        }, {
+            scheduled: true,
+            timezone: 'Asia/Tokyo',
+        });
+    }
 });
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand())
@@ -68,19 +84,19 @@ client.on('messageCreate', async (message) => {
     }
     switch (message.content) {
         case '!よるぼ':
-            bo_1.default.bo(message.channel, '夜');
+            bo_1.default.bo(message.channel, '夜', client);
             break;
         case '!ひるぼ':
-            bo_1.default.bo(message.channel, '昼');
+            bo_1.default.bo(message.channel, '昼', client);
             break;
         case '!あさぼ':
-            bo_1.default.bo(message.channel, '朝');
+            bo_1.default.bo(message.channel, '朝', client);
             break;
         case '!おはよう':
-            bo_1.default.bo(message.channel, '朝');
+            bo_1.default.bo(message.channel, '朝', client);
             break;
         case '!おやすみ':
-            bo_1.default.bo(message.channel, '夜');
+            bo_1.default.bo(message.channel, '夜', client);
             break;
     }
     if (!yomiage_1.default.connection) {

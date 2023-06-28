@@ -14,7 +14,7 @@ import Crosshair from './commands/crosshair'
 import FlowerMeaning from './commands/flower-meaning'
 import { exec } from 'child_process'
 import http from 'http'
-// import cron from 'node-cron'
+import cron from 'node-cron'
 
 require('dotenv').config()
 
@@ -38,24 +38,24 @@ http
   client.on('ready', async () => {
     console.log('Bot is ready.');
 
-    // const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
+    const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
 
-    // if (textChannel) {
-      // 平日10時に実行
-        // cron.schedule('0 10 * * 1-5', async () => {
-        //   Bo.bo(textChannel as TextChannel, "夜");
-        // }, {
-        //     scheduled: true,
-        //     timezone: 'Asia/Tokyo',
-        // })
-        // // 土日10時に実行
-        // cron.schedule('0 10 * * 0,6', async () => {
-        //   Bo.bo(textChannel as TextChannel, "終日");
-        // }, {
-        //     scheduled: true,
-        //     timezone: 'Asia/Tokyo',
-        // });
-    // }
+    if (textChannel) {
+      // 平日9時に実行
+        cron.schedule('0 9 * * 1-5', async () => {
+          Bo.bo(textChannel as TextChannel, "夜", client);
+        }, {
+            scheduled: true,
+            timezone: 'Asia/Tokyo',
+        })
+        // 土日10時に実行
+        cron.schedule('0 9 * * 0,6', async () => {
+          Bo.bo(textChannel as TextChannel, "終日", client);
+        }, {
+            scheduled: true,
+            timezone: 'Asia/Tokyo',
+        });
+    }
 });
 
 client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
@@ -95,19 +95,19 @@ client.on('messageCreate', async (message) => {
   }
   switch (message.content) {
     case '!よるぼ':
-      Bo.bo(message.channel as TextChannel, '夜')
+      Bo.bo(message.channel as TextChannel, '夜', client)
       break
     case '!ひるぼ':
-      Bo.bo(message.channel as TextChannel, '昼')
+      Bo.bo(message.channel as TextChannel, '昼', client)
       break
     case '!あさぼ':
-      Bo.bo(message.channel as TextChannel, '朝')
+      Bo.bo(message.channel as TextChannel, '朝', client)
       break
     case '!おはよう':
-      Bo.bo(message.channel as TextChannel, '朝')
+      Bo.bo(message.channel as TextChannel, '朝', client)
       break
     case '!おやすみ':
-      Bo.bo(message.channel as TextChannel, '夜')
+      Bo.bo(message.channel as TextChannel, '夜', client)
       break
   }
 
