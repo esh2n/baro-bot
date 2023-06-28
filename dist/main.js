@@ -13,7 +13,6 @@ const crosshair_1 = __importDefault(require("./commands/crosshair"));
 const flower_meaning_1 = __importDefault(require("./commands/flower-meaning"));
 const child_process_1 = require("child_process");
 const http_1 = __importDefault(require("http"));
-const node_cron_1 = __importDefault(require("node-cron"));
 require('dotenv').config();
 const client = new discord_js_1.Client({
     intents: [
@@ -32,21 +31,6 @@ http_1.default
     .listen(process.env.PORT);
 client.on('ready', async () => {
     console.log('Bot is ready.');
-    const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
-    if (textChannel) {
-        node_cron_1.default.schedule('0 10 * * 1-5', async () => {
-            bo_1.default.bo(textChannel, "夜");
-        }, {
-            scheduled: true,
-            timezone: 'Asia/Tokyo',
-        });
-        node_cron_1.default.schedule('0 10 * * 0,6', async () => {
-            bo_1.default.bo(textChannel, "終日");
-        }, {
-            scheduled: true,
-            timezone: 'Asia/Tokyo',
-        });
-    }
 });
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand())
@@ -82,11 +66,24 @@ client.on('messageCreate', async (message) => {
     if (message.author.bot) {
         return;
     }
-    if (message.content === '!よるぼ') {
-        bo_1.default.bo(message.channel, "夜");
+    switch (message.content) {
+        case '!よるぼ':
+            bo_1.default.bo(message.channel, '夜');
+            break;
+        case '!ひるぼ':
+            bo_1.default.bo(message.channel, '昼');
+            break;
+        case '!あさぼ':
+            bo_1.default.bo(message.channel, '朝');
+            break;
+        case '!おはよう':
+            bo_1.default.bo(message.channel, '朝');
+            break;
+        case '!おやすみ':
+            bo_1.default.bo(message.channel, '夜');
+            break;
     }
     if (!yomiage_1.default.connection) {
-        console.log('Not connected to voice channel.');
         return;
     }
     const channelId = message.channel.id;

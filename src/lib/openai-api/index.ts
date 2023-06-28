@@ -13,8 +13,6 @@ export const generateAIResponse = async (prompt: string, rulePrompt: string): Pr
             {role: ChatCompletionRequestMessageRoleEnum.System, content: rulePrompt},
             {role: ChatCompletionRequestMessageRoleEnum.User, content: prompt},
         ],
-        top_p: 2,
-        temperature: 2,
     });
 
     return (completion.data.choices[0].message?.content ?? '').trim();

@@ -13,8 +13,6 @@ const generateAIResponse = async (prompt, rulePrompt) => {
             { role: openai_1.ChatCompletionRequestMessageRoleEnum.System, content: rulePrompt },
             { role: openai_1.ChatCompletionRequestMessageRoleEnum.User, content: prompt },
         ],
-        top_p: 2,
-        temperature: 2,
     });
     return (completion.data.choices[0].message?.content ?? '').trim();
 };
