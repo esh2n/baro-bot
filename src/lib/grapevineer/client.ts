@@ -6,6 +6,7 @@ import {
 } from 'grapevineer/gen/ts/v1/flower_meaning_pb'
 import { GetAllPlayersRequest, Player } from 'grapevineer/gen/ts/v1/player_pb'
 import { GetWavFromTextRequest } from 'grapevineer/gen/ts/v1/voicevox_pb'
+import { GetBoScriptRandomlyRequest } from 'grapevineer/gen/ts/v1/bo_pb'
 
 const grpcClient = new GrapevineerClient(
   'grapevineer-grpc.fly.dev:443',
@@ -105,4 +106,20 @@ export const getWavFromText = async (text: string, speakerId: number) => {
       resolve(response?.getAudioData_asU8()!)
     })
   })
+}
+
+export const getBoScriptRandomly = async () => {
+  const request = new GetBoScriptRandomlyRequest()
+
+  return new Promise<string | null>(
+    (resolve, reject) => {
+      grpcClient.getBoScriptRandomly(request, (err, response) => {
+        if (err || response === null) {
+          console.error(err)
+          reject(null)
+        }
+        resolve(response?.getScript()!)
+      })
+    }
+  )
 }
