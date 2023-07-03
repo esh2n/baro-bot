@@ -23,12 +23,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWavFromText = exports.getFlowerMeaningByDate = exports.getAllPlayers = void 0;
+exports.getBoScriptRandomly = exports.getWavFromText = exports.getFlowerMeaningByDate = exports.getAllPlayers = void 0;
 const grpc = __importStar(require("@grpc/grpc-js"));
 const grapevineer_grpc_pb_1 = require("grapevineer/gen/ts/v1/grapevineer_grpc_pb");
 const flower_meaning_pb_1 = require("grapevineer/gen/ts/v1/flower_meaning_pb");
 const player_pb_1 = require("grapevineer/gen/ts/v1/player_pb");
 const voicevox_pb_1 = require("grapevineer/gen/ts/v1/voicevox_pb");
+const bo_pb_1 = require("grapevineer/gen/ts/v1/bo_pb");
 const grpcClient = new grapevineer_grpc_pb_1.GrapevineerClient('grapevineer-grpc.fly.dev:443', grpc.credentials.createInsecure());
 const getAllPlayers = async () => {
     const request = new player_pb_1.GetAllPlayersRequest();
@@ -76,3 +77,16 @@ const getWavFromText = async (text, speakerId) => {
     });
 };
 exports.getWavFromText = getWavFromText;
+const getBoScriptRandomly = async () => {
+    const request = new bo_pb_1.GetBoScriptRandomlyRequest();
+    return new Promise((resolve, reject) => {
+        grpcClient.getBoScriptRandomly(request, (err, response) => {
+            if (err || response === null) {
+                console.error(err);
+                reject(null);
+            }
+            resolve(response?.getScript());
+        });
+    });
+};
+exports.getBoScriptRandomly = getBoScriptRandomly;
