@@ -12,6 +12,7 @@ const crosshair_1 = __importDefault(require("./crosshair"));
 const flower_meaning_1 = __importDefault(require("./flower-meaning"));
 const stats_1 = __importDefault(require("./stats"));
 const yomiage_1 = __importDefault(require("./yomiage"));
+const store_1 = __importDefault(require("./store"));
 const getCommands = async () => {
     return [
         ask_1.default.command,
@@ -21,6 +22,8 @@ const getCommands = async () => {
         flower_meaning_1.default.command,
         stats_1.default.command,
         yomiage_1.default.command,
+        store_1.default.registerCommand,
+        store_1.default.storeCommand,
     ];
 };
 const waitSeconds = (second) => {

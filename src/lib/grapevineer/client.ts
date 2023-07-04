@@ -7,6 +7,11 @@ import {
 import { GetAllPlayersRequest, Player } from 'grapevineer/gen/ts/v1/player_pb'
 import { GetWavFromTextRequest } from 'grapevineer/gen/ts/v1/voicevox_pb'
 import { GetBoScriptRandomlyRequest } from 'grapevineer/gen/ts/v1/bo_pb'
+import {
+  GetTodaysStoresByDiscordIDRequest,
+  GetTodaysStoresByDiscordIDResponse,
+  SetStoreViewerRequest,
+} from 'grapevineer/gen/ts/v1/store_pb'
 
 const grpcClient = new GrapevineerClient(
   'grapevineer-grpc.fly.dev:443',
@@ -111,15 +116,51 @@ export const getWavFromText = async (text: string, speakerId: number) => {
 export const getBoScriptRandomly = async () => {
   const request = new GetBoScriptRandomlyRequest()
 
-  return new Promise<string | null>(
+  return new Promise<string | null>((resolve, reject) => {
+    grpcClient.getBoScriptRandomly(request, (err, response) => {
+      if (err || response === null) {
+        console.error(err)
+        reject(null)
+      }
+      resolve(response?.getScript()!)
+    })
+  })
+}
+
+export const getTodaysStoresByDiscordId = async (id: string) => {
+  const request = new GetTodaysStoresByDiscordIDRequest()
+  request.setDiscordId(id)
+
+  return new Promise<GetTodaysStoresByDiscordIDResponse.AsObject | null>(
     (resolve, reject) => {
-      grpcClient.getBoScriptRandomly(request, (err, response) => {
+      grpcClient.getTodaysStoresByDiscordID(request, (err, response) => {
         if (err || response === null) {
           console.error(err)
           reject(null)
         }
-        resolve(response?.getScript()!)
+        resolve(response?.toObject()!)
       })
     }
   )
+}
+
+export const setStoreViewer = async (
+  discord_id: string,
+  id: string,
+  token: string
+) => {
+  const request = new SetStoreViewerRequest()
+  request.setDiscordId(discord_id)
+  request.setToken(token)
+  request.setPlayerId(id)
+
+  return new Promise<number | null>((resolve, reject) => {
+    grpcClient.setStoreViewer(request, (err, response) => {
+      if (err || response === null) {
+        console.error(err)
+        reject(null)
+      }
+      resolve(response?.getStatus()!)
+    })
+  })
 }

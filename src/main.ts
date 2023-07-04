@@ -12,6 +12,7 @@ import AskTactics from './commands/ask-tactics'
 import Bo from './commands/bo'
 import Crosshair from './commands/crosshair'
 import FlowerMeaning from './commands/flower-meaning'
+import Store from './commands/store'
 import { exec } from 'child_process'
 import http from 'http'
 import cron from 'node-cron'
@@ -35,28 +36,38 @@ http
   })
   .listen(process.env.PORT)
 
-  client.on('ready', async () => {
-    console.log('Bot is ready.');
+client.on('ready', async () => {
+  console.log('Bot is ready.')
 
-    const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
+  const textChannel = client.channels.cache.find(
+    (channel) => channel.id === '1006967319676846130'
+  )
 
-    if (textChannel) {
-      // 平日9時に実行
-        cron.schedule('0 9 * * 1-5', async () => {
-          Bo.bo(textChannel as TextChannel, "夜", client);
-        }, {
-            scheduled: true,
-            timezone: 'Asia/Tokyo',
-        })
-        // 土日10時に実行
-        cron.schedule('0 9 * * 0,6', async () => {
-          Bo.bo(textChannel as TextChannel, "終日", client);
-        }, {
-            scheduled: true,
-            timezone: 'Asia/Tokyo',
-        });
-    }
-});
+  if (textChannel) {
+    // 平日9時に実行
+    cron.schedule(
+      '0 9 * * 1-5',
+      async () => {
+        Bo.bo(textChannel as TextChannel, '夜', client)
+      },
+      {
+        scheduled: true,
+        timezone: 'Asia/Tokyo',
+      }
+    )
+    // 土日10時に実行
+    cron.schedule(
+      '0 9 * * 0,6',
+      async () => {
+        Bo.bo(textChannel as TextChannel, '終日', client)
+      },
+      {
+        scheduled: true,
+        timezone: 'Asia/Tokyo',
+      }
+    )
+  }
+})
 
 client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
   if (!interaction.isCommand()) return
@@ -83,6 +94,12 @@ client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
       break
     case 'yomiage':
       await Yomiage.handle(interaction, client)
+      break
+    case 'store':
+      await Store.handleStore(interaction, client)
+      break
+    case 'register':
+      await Store.handleRegister(interaction, client)
       break
     default:
       break

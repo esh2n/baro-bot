@@ -11,6 +11,7 @@ const ask_tactics_1 = __importDefault(require("./commands/ask-tactics"));
 const bo_1 = __importDefault(require("./commands/bo"));
 const crosshair_1 = __importDefault(require("./commands/crosshair"));
 const flower_meaning_1 = __importDefault(require("./commands/flower-meaning"));
+const store_1 = __importDefault(require("./commands/store"));
 const child_process_1 = require("child_process");
 const http_1 = __importDefault(require("http"));
 const node_cron_1 = __importDefault(require("node-cron"));
@@ -32,16 +33,16 @@ http_1.default
     .listen(process.env.PORT);
 client.on('ready', async () => {
     console.log('Bot is ready.');
-    const textChannel = client.channels.cache.find(channel => channel.id === '1006967319676846130');
+    const textChannel = client.channels.cache.find((channel) => channel.id === '1006967319676846130');
     if (textChannel) {
         node_cron_1.default.schedule('0 9 * * 1-5', async () => {
-            bo_1.default.bo(textChannel, "夜", client);
+            bo_1.default.bo(textChannel, '夜', client);
         }, {
             scheduled: true,
             timezone: 'Asia/Tokyo',
         });
         node_cron_1.default.schedule('0 9 * * 0,6', async () => {
-            bo_1.default.bo(textChannel, "終日", client);
+            bo_1.default.bo(textChannel, '終日', client);
         }, {
             scheduled: true,
             timezone: 'Asia/Tokyo',
@@ -73,6 +74,12 @@ client.on('interactionCreate', async (interaction) => {
             break;
         case 'yomiage':
             await yomiage_1.default.handle(interaction, client);
+            break;
+        case 'store':
+            await store_1.default.handleStore(interaction, client);
+            break;
+        case 'register':
+            await store_1.default.handleRegister(interaction, client);
             break;
         default:
             break;

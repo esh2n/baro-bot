@@ -23,13 +23,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBoScriptRandomly = exports.getWavFromText = exports.getFlowerMeaningByDate = exports.getAllPlayers = void 0;
+exports.setStoreViewer = exports.getTodaysStoresByDiscordId = exports.getBoScriptRandomly = exports.getWavFromText = exports.getFlowerMeaningByDate = exports.getAllPlayers = void 0;
 const grpc = __importStar(require("@grpc/grpc-js"));
 const grapevineer_grpc_pb_1 = require("grapevineer/gen/ts/v1/grapevineer_grpc_pb");
 const flower_meaning_pb_1 = require("grapevineer/gen/ts/v1/flower_meaning_pb");
 const player_pb_1 = require("grapevineer/gen/ts/v1/player_pb");
 const voicevox_pb_1 = require("grapevineer/gen/ts/v1/voicevox_pb");
 const bo_pb_1 = require("grapevineer/gen/ts/v1/bo_pb");
+const store_pb_1 = require("grapevineer/gen/ts/v1/store_pb");
 const grpcClient = new grapevineer_grpc_pb_1.GrapevineerClient('grapevineer-grpc.fly.dev:443', grpc.credentials.createInsecure());
 const getAllPlayers = async () => {
     const request = new player_pb_1.GetAllPlayersRequest();
@@ -90,3 +91,33 @@ const getBoScriptRandomly = async () => {
     });
 };
 exports.getBoScriptRandomly = getBoScriptRandomly;
+const getTodaysStoresByDiscordId = async (id) => {
+    const request = new store_pb_1.GetTodaysStoresByDiscordIDRequest();
+    request.setDiscordId(id);
+    return new Promise((resolve, reject) => {
+        grpcClient.getTodaysStoresByDiscordID(request, (err, response) => {
+            if (err || response === null) {
+                console.error(err);
+                reject(null);
+            }
+            resolve(response?.toObject());
+        });
+    });
+};
+exports.getTodaysStoresByDiscordId = getTodaysStoresByDiscordId;
+const setStoreViewer = async (discord_id, id, token) => {
+    const request = new store_pb_1.SetStoreViewerRequest();
+    request.setDiscordId(discord_id);
+    request.setToken(token);
+    request.setPlayerId(id);
+    return new Promise((resolve, reject) => {
+        grpcClient.setStoreViewer(request, (err, response) => {
+            if (err || response === null) {
+                console.error(err);
+                reject(null);
+            }
+            resolve(response?.getStatus());
+        });
+    });
+};
+exports.setStoreViewer = setStoreViewer;
