@@ -7,10 +7,9 @@ const discord_js_1 = require("discord.js");
 const yomiage_1 = __importDefault(require("./commands/yomiage"));
 const stats_1 = __importDefault(require("./commands/stats"));
 const ask_1 = __importDefault(require("./commands/ask"));
-const ask_tactics_1 = __importDefault(require("./commands/ask-tactics"));
 const bo_1 = __importDefault(require("./commands/bo"));
 const crosshair_1 = __importDefault(require("./commands/crosshair"));
-const flower_meaning_1 = __importDefault(require("./commands/flower-meaning"));
+const flower_1 = __importDefault(require("./commands/flower"));
 const store_1 = __importDefault(require("./commands/store"));
 const child_process_1 = require("child_process");
 const http_1 = __importDefault(require("http"));
@@ -57,17 +56,14 @@ client.on('interactionCreate', async (interaction) => {
         case 'ask':
             await ask_1.default.handle(interaction, client);
             break;
-        case 'ask-tactics':
-            await ask_tactics_1.default.handle(interaction, client);
-            break;
         case 'bo':
             await bo_1.default.handle(interaction, client);
             break;
         case 'crosshair':
             await crosshair_1.default.handle(interaction, client);
             break;
-        case 'flower-meaning':
-            await flower_meaning_1.default.handle(interaction, client);
+        case 'flower':
+            await flower_1.default.handle(interaction, client);
             break;
         case 'stats':
             await stats_1.default.handle(interaction, client);

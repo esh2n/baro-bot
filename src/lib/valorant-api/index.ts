@@ -1,77 +1,50 @@
-import { EmbedBuilder, AttachmentBuilder } from 'discord.js'
-import fs from 'fs';
+import ValorantClient from 'unofficial-valorant-api';
+import { CrosshairResponse, MatchResponse, MMRResponse, Player, Rank } from './types';
 
-import { getRecentMatches } from './getRecentMatches';
-import { Player, MatchResponse, Rank } from './types';
+const valorantClient = new ValorantClient();
 
-export const getEmbedRecentMatchData = async (name: string, tag: string): Promise<any> => {
+export const getRecentMatches = async (name: string, tag: string): Promise<any> => {
     try {
-            const [recentMatchesResponse, player] = await getRecentMatches(name, tag)
-            const imageFiles: Array<AttachmentBuilder> = []
+        const playerResponse = await valorantClient.getAccount({name, tag});
+        const player = playerResponse.data as Player;
+        const matchHistory = await valorantClient.getMatchesByPUUID({region: 'ap', puuid: player.puuid, filter: 'competitive'});
+        const mmrResponse = await valorantClient.getMMRByPUUID({version: 'v2', region: 'ap', puuid: player.puuid});
+        const recentMatchesResponse = matchHistory.data as [MatchResponse]
+        const mmr = (mmrResponse as MMRResponse).data?.current_data.mmr_change_to_last_game;
+        return [recentMatchesResponse, player, mmr];
+    }catch (error) {
+        console.error(error);
+        return [[], null, null];
+    }
+};
 
-            const recentMatches: Array<EmbedBuilder> = recentMatchesResponse.slice(0, 20).map((match: MatchResponse, index: number) => {
-            const playerInMatch = match.players.all_players.find(p => p.puuid === (player as Player).puuid);
-            const playerRank = playerInMatch?.currenttier_patched as Rank;
-
-            if (!playerInMatch) {
-                throw new Error(`Player not found in match #${index + 1}`);
-            }
-
-            const playerTeam = playerInMatch?.team;
-            const winningTeam = match.teams.red.has_won ? 'Red' : 'Blue';
-            const isWin = playerTeam === winningTeam ? '👍' : '👎';
-            const winColor = isWin === '👍' ? 0x0000ff : 0xff0000;
-
-            const { kills, deaths, assists, headshots, bodyshots, legshots, score } = playerInMatch.stats;
-
-            const headshotPercentage = Math.round((headshots / (headshots + bodyshots + legshots)) * 100);
-
-            const agent = playerInMatch.character;
-
-            const agentImage = getAgentImageUrl(agent);
-            imageFiles.push(agentImage);
-
-            const rankImage = getRankImageUrl(playerRank);
-
-            const rankImageUrl = getRankImageFilename(playerRank)
-            imageFiles.push(rankImage);
-
-            const embed = new EmbedBuilder()
-            .setTitle(`${agent} ${kills}/${deaths}/${assists} | HS%: ${headshotPercentage}% | Store: ${score}`)
-            .setAuthor({name: `#${index+1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${rankImageUrl}.png`})
-            .setThumbnail(`attachment://${agent}.png`)
-            .setColor(winColor)
-            .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
-            return embed;
-        });
-
-        return [recentMatches, imageFiles]
-
-        } catch (error) {
-            const embed = new EmbedBuilder()
-            .setTitle(`エラーが発生しました。${error}`)
-            return [[embed], []]
-        }
+export const getActualRank = (rank: Rank, mmr: number): Rank => {
+  const rankTiers: Rank[] = ["Unrated", "Iron 1", "Iron 2", "Iron 3", "Bronze 1", "Bronze 2", "Bronze 3", "Silver 1", "Silver 2", "Silver 3", "Gold 1", "Gold 2", "Gold 3", "Platinum 1", "Platinum 2", "Platinum 3", "Diamond 1", "Diamond 2", "Diamond 3", "Ascendant 1", "Ascendant 2", "Ascendant 3", "Immortal 1", "Immortal 2", "Immortal 3", "Radiant"];
+  const index = rankTiers.indexOf(rank);
+  if (index === -1) {
+    throw new Error("Invalid rank provided.");
+  }
+  const adjustedMmr = Math.floor(mmr / 10);
+  let adjustedIndex = index + adjustedMmr;
+  if (adjustedIndex < 0) {
+    adjustedIndex = 0
+  } else if (adjustedIndex > 25) {
+    adjustedIndex = 25
+  }
+  return rankTiers[adjustedIndex];
 }
 
-const getAgentImageUrl = (agentName: string): AttachmentBuilder => {
-    const imagePath = `./assets/icon/${agentName}.png`;
-
-    const attachment = new AttachmentBuilder(fs.readFileSync(imagePath), {name: `${agentName}.png`});
-
-    return attachment;
-};
-
 export const getRankImageFilename = (rank: Rank): string => {
-    const rankName = rank.replace(" ", "_");
-    return `${rankName}_Rank`;
-  }
+  const rankName = rank.replace(" ", "_");
+  return `${rankName}_Rank.png`;
+}
 
-
-  const getRankImageUrl = (rank: Rank): AttachmentBuilder => {
-    const imagePath = `./assets/rank/${getRankImageFilename(rank)}.png`;
-
-    const attachment = new AttachmentBuilder(fs.readFileSync(imagePath), {name: `${getRankImageFilename(rank)}.png`});
-
-    return attachment;
-};
+export const getCrosshairImageURL = async (code: string, size = 256): Promise<any> => {
+    try {
+        const res = await valorantClient.getCrosshair({code, size}) as CrosshairResponse
+        return res.url || ''
+    } catch (error) {
+        console.error(error);
+        return "";
+    }
+}
