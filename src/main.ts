@@ -8,10 +8,9 @@ import {
 import Yomiage from './commands/yomiage'
 import Stats from './commands/stats'
 import Ask from './commands/ask'
-import AskTactics from './commands/ask-tactics'
 import Bo from './commands/bo'
 import Crosshair from './commands/crosshair'
-import FlowerMeaning from './commands/flower-meaning'
+import Flower from './commands/flower'
 import Store from './commands/store'
 import { exec } from 'child_process'
 import http from 'http'
@@ -77,17 +76,14 @@ client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
     case 'ask':
       await Ask.handle(interaction, client)
       break
-    case 'ask-tactics':
-      await AskTactics.handle(interaction, client)
-      break
     case 'bo':
       await Bo.handle(interaction, client)
       break
     case 'crosshair':
       await Crosshair.handle(interaction, client)
       break
-    case 'flower-meaning':
-      await FlowerMeaning.handle(interaction, client)
+    case 'flower':
+      await Flower.handle(interaction, client)
       break
     case 'stats':
       await Stats.handle(interaction, client)

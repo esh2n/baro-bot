@@ -6,20 +6,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const rest_1 = require("@discordjs/rest");
 const v9_1 = require("discord-api-types/v9");
 const ask_1 = __importDefault(require("./ask"));
-const ask_tactics_1 = __importDefault(require("./ask-tactics"));
 const bo_1 = __importDefault(require("./bo"));
 const crosshair_1 = __importDefault(require("./crosshair"));
-const flower_meaning_1 = __importDefault(require("./flower-meaning"));
+const flower_1 = __importDefault(require("./flower"));
 const stats_1 = __importDefault(require("./stats"));
 const yomiage_1 = __importDefault(require("./yomiage"));
 const store_1 = __importDefault(require("./store"));
 const getCommands = async () => {
     return [
         ask_1.default.command,
-        ask_tactics_1.default.command,
         bo_1.default.command,
         crosshair_1.default.command,
-        flower_meaning_1.default.command,
+        flower_1.default.command,
         stats_1.default.command,
         yomiage_1.default.command,
         store_1.default.registerCommand,

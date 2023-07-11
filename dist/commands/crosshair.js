@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const getRecentMatches_1 = require("../lib/valorant-api/getRecentMatches");
+const valorant_api_1 = require("../lib/valorant-api");
 class Crosshair {
     static instance = null;
     command;
@@ -28,7 +28,7 @@ class Crosshair {
         try {
             const code = i.options.getString('code');
             await i.deferReply();
-            const url = await (0, getRecentMatches_1.getCrosshairImageURL)(code);
+            const url = await (0, valorant_api_1.getCrosshairImageURL)(code);
             await i.editReply({ content: `\ncode: ${code} \n${url}` });
         }
         catch (error) {

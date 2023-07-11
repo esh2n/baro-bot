@@ -3,61 +3,55 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRankImageFilename = exports.getEmbedRecentMatchData = void 0;
-const discord_js_1 = require("discord.js");
-const fs_1 = __importDefault(require("fs"));
-const getRecentMatches_1 = require("./getRecentMatches");
-const getEmbedRecentMatchData = async (name, tag) => {
+exports.getCrosshairImageURL = exports.getRankImageFilename = exports.getActualRank = exports.getRecentMatches = void 0;
+const unofficial_valorant_api_1 = __importDefault(require("unofficial-valorant-api"));
+const valorantClient = new unofficial_valorant_api_1.default();
+const getRecentMatches = async (name, tag) => {
     try {
-        const [recentMatchesResponse, player] = await (0, getRecentMatches_1.getRecentMatches)(name, tag);
-        const imageFiles = [];
-        const recentMatches = recentMatchesResponse.slice(0, 20).map((match, index) => {
-            const playerInMatch = match.players.all_players.find(p => p.puuid === player.puuid);
-            const playerRank = playerInMatch?.currenttier_patched;
-            if (!playerInMatch) {
-                throw new Error(`Player not found in match #${index + 1}`);
-            }
-            const playerTeam = playerInMatch?.team;
-            const winningTeam = match.teams.red.has_won ? 'Red' : 'Blue';
-            const isWin = playerTeam === winningTeam ? '👍' : '👎';
-            const winColor = isWin === '👍' ? 0x0000ff : 0xff0000;
-            const { kills, deaths, assists, headshots, bodyshots, legshots, score } = playerInMatch.stats;
-            const headshotPercentage = Math.round((headshots / (headshots + bodyshots + legshots)) * 100);
-            const agent = playerInMatch.character;
-            const agentImage = getAgentImageUrl(agent);
-            imageFiles.push(agentImage);
-            const rankImage = getRankImageUrl(playerRank);
-            const rankImageUrl = (0, exports.getRankImageFilename)(playerRank);
-            imageFiles.push(rankImage);
-            const embed = new discord_js_1.EmbedBuilder()
-                .setTitle(`${agent} ${kills}/${deaths}/${assists} | HS%: ${headshotPercentage}% | Store: ${score}`)
-                .setAuthor({ name: `#${index + 1} ${match.metadata.map} ${isWin}`, iconURL: `attachment://${rankImageUrl}.png` })
-                .setThumbnail(`attachment://${agent}.png`)
-                .setColor(winColor)
-                .setFooter({ text: `${match.metadata.mode}, ${match.metadata.game_start_patched}`, iconURL: 'https://avatars.githubusercontent.com/u/55518345?v=4' });
-            return embed;
-        });
-        return [recentMatches, imageFiles];
+        const playerResponse = await valorantClient.getAccount({ name, tag });
+        const player = playerResponse.data;
+        const matchHistory = await valorantClient.getMatchesByPUUID({ region: 'ap', puuid: player.puuid, filter: 'competitive' });
+        const mmrResponse = await valorantClient.getMMRByPUUID({ version: 'v2', region: 'ap', puuid: player.puuid });
+        const recentMatchesResponse = matchHistory.data;
+        const mmr = mmrResponse.data?.current_data.mmr_change_to_last_game;
+        return [recentMatchesResponse, player, mmr];
     }
     catch (error) {
-        const embed = new discord_js_1.EmbedBuilder()
-            .setTitle(`エラーが発生しました。${error}`);
-        return [[embed], []];
+        console.error(error);
+        return [[], null, null];
     }
 };
-exports.getEmbedRecentMatchData = getEmbedRecentMatchData;
-const getAgentImageUrl = (agentName) => {
-    const imagePath = `./assets/icon/${agentName}.png`;
-    const attachment = new discord_js_1.AttachmentBuilder(fs_1.default.readFileSync(imagePath), { name: `${agentName}.png` });
-    return attachment;
+exports.getRecentMatches = getRecentMatches;
+const getActualRank = (rank, mmr) => {
+    const rankTiers = ["Unrated", "Iron 1", "Iron 2", "Iron 3", "Bronze 1", "Bronze 2", "Bronze 3", "Silver 1", "Silver 2", "Silver 3", "Gold 1", "Gold 2", "Gold 3", "Platinum 1", "Platinum 2", "Platinum 3", "Diamond 1", "Diamond 2", "Diamond 3", "Ascendant 1", "Ascendant 2", "Ascendant 3", "Immortal 1", "Immortal 2", "Immortal 3", "Radiant"];
+    const index = rankTiers.indexOf(rank);
+    if (index === -1) {
+        throw new Error("Invalid rank provided.");
+    }
+    const adjustedMmr = Math.floor(mmr / 10);
+    let adjustedIndex = index + adjustedMmr;
+    if (adjustedIndex < 0) {
+        adjustedIndex = 0;
+    }
+    else if (adjustedIndex > 25) {
+        adjustedIndex = 25;
+    }
+    return rankTiers[adjustedIndex];
 };
+exports.getActualRank = getActualRank;
 const getRankImageFilename = (rank) => {
     const rankName = rank.replace(" ", "_");
-    return `${rankName}_Rank`;
+    return `${rankName}_Rank.png`;
 };
 exports.getRankImageFilename = getRankImageFilename;
-const getRankImageUrl = (rank) => {
-    const imagePath = `./assets/rank/${(0, exports.getRankImageFilename)(rank)}.png`;
-    const attachment = new discord_js_1.AttachmentBuilder(fs_1.default.readFileSync(imagePath), { name: `${(0, exports.getRankImageFilename)(rank)}.png` });
-    return attachment;
+const getCrosshairImageURL = async (code, size = 256) => {
+    try {
+        const res = await valorantClient.getCrosshair({ code, size });
+        return res.url || '';
+    }
+    catch (error) {
+        console.error(error);
+        return "";
+    }
 };
+exports.getCrosshairImageURL = getCrosshairImageURL;

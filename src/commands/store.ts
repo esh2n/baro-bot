@@ -79,12 +79,13 @@ class Store {
 
   private getEmbed = async (skins: Skin.AsObject[]) => {
     const arrayEmbed = skins.map((skin, index) => {
+      const iconUrl = skin.displayIcon === '' ? null : skin.displayIcon
       const embed = new EmbedBuilder()
         .setTitle(skin.displayName)
         .setAuthor({
           name: `#${index + 1}`,
         })
-        .setThumbnail(skin.displayIcon)
+        .setThumbnail(iconUrl)
         .setColor(skin.tier?.colorCode as ColorResolvable)
         .setFooter({
           text: skin.uuid,
@@ -92,7 +93,6 @@ class Store {
         })
       return embed
     })
-    console.log(arrayEmbed)
 
     return arrayEmbed
   }

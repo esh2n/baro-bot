@@ -3,10 +3,9 @@ import { Routes } from 'discord-api-types/v9'
 import { ApplicationCommandOption } from 'discord.js'
 
 import Ask from './ask'
-import AskTactics from './ask-tactics'
 import Bo from './bo'
 import Crosshair from './crosshair'
-import FlowerMeaning from './flower-meaning'
+import Flower from './flower'
 import Stats from './stats'
 import Yomiage from './yomiage'
 import Store from './store'
@@ -20,10 +19,9 @@ export type RawCommand = {
 const getCommands = async (): Promise<RawCommand[]> => {
   return [
     Ask.command,
-    AskTactics.command,
     Bo.command,
     Crosshair.command,
-    FlowerMeaning.command,
+    Flower.command,
     Stats.command,
     Yomiage.command,
     Store.registerCommand,

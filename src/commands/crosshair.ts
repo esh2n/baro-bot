@@ -4,7 +4,7 @@ import {
   CommandInteraction,
   CommandInteractionOptionResolver,
 } from 'discord.js'
-import { getCrosshairImageURL } from '../lib/valorant-api/getRecentMatches'
+import { getCrosshairImageURL } from '../lib/valorant-api'
 import { RawCommand } from '.'
 
 class Crosshair {
