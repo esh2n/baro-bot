@@ -56,7 +56,7 @@ client.on('ready', async () => {
     )
     // 土日10時に実行
     cron.schedule(
-      '0 9 * * 0,6',
+      '0 10 * * 0,6',
       async () => {
         Bo.bo(textChannel as TextChannel, '終日', client)
       },
@@ -163,8 +163,12 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         // VCに1人だけいる場合
         const vcName = voiceChannel!.name
         if (vcName === 'VALORANT' || vcName === '雑談') {
+          let guild = client.guilds.cache.get('1005117753960693863')
+          if (!guild) return
+          let role = guild.roles.cache.find((role) => role.name === 'VALORANT')
+          if (!role) return
           ;(textChannel as TextChannel).send(
-            `@VALORANT ${
+            `<@&${role.id}> ${
               newState!.member!.nickname || newState!.member!.user.username
             }さんがVC「${vcName}」であなたを待っています。可哀想なので参加してあげましょう。`
           )
