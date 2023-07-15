@@ -40,7 +40,7 @@ client.on('ready', async () => {
             scheduled: true,
             timezone: 'Asia/Tokyo',
         });
-        node_cron_1.default.schedule('0 9 * * 0,6', async () => {
+        node_cron_1.default.schedule('0 10 * * 0,6', async () => {
             bo_1.default.bo(textChannel, '終日', client);
         }, {
             scheduled: true,
@@ -130,8 +130,13 @@ client.on('voiceStateUpdate', (oldState, newState) => {
             if (voiceChannel.members.size === 1) {
                 const vcName = voiceChannel.name;
                 if (vcName === 'VALORANT' || vcName === '雑談') {
-                    ;
-                    textChannel.send(`@VALORANT ${newState.member.nickname || newState.member.user.username}さんがVC「${vcName}」であなたを待っています。可哀想なので参加してあげましょう。`);
+                    let guild = client.guilds.cache.get('1005117753960693863');
+                    if (!guild)
+                        return;
+                    let role = guild.roles.cache.find((role) => role.name === 'VALORANT');
+                    if (!role)
+                        return;
+                    textChannel.send(`<@&${role.id}> ${newState.member.nickname || newState.member.user.username}さんがVC「${vcName}」であなたを待っています。可哀想なので参加してあげましょう。`);
                 }
             }
         }
