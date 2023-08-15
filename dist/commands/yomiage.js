@@ -33,6 +33,10 @@ class Yomiage {
                             name: 'ストップ',
                             value: 'stop',
                         },
+                        {
+                            name: 'シャッフル',
+                            value: 'shuffle',
+                        },
                     ],
                 },
             ],
@@ -106,6 +110,10 @@ class Yomiage {
                     await i.editReply({
                         content: '\n読み上げを終了します。',
                     });
+                    break;
+                case 'shuffle':
+                    this._clearUserSpeakerMap();
+                    break;
             }
         }
         catch (error) {
@@ -141,13 +149,13 @@ class Yomiage {
         });
         return c;
     }
-    async _destory() {
+    _destory() {
         if (!this.connection)
             return;
         this.connection.destroy();
         this.connection = null;
     }
-    async playAudio() {
+    playAudio() {
         if (!this.connection)
             return;
         const resource = (0, voice_1.createAudioResource)(this.filePath, {
@@ -156,7 +164,7 @@ class Yomiage {
         this.player.play(resource);
         this.connection.subscribe(this.player);
     }
-    _validateToPlay = async (i, vc) => {
+    _validateToPlay = (i, vc) => {
         if (!vc) {
             return i.reply({
                 content: '接続先のVCが見つかりません。',

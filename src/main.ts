@@ -135,7 +135,7 @@ client.on('messageCreate', async (message) => {
     return
   }
 
-  let text = message.content
+  const text = message.content
   exec('rm audio.wav')
 
   const userID = message.author.id

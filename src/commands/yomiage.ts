@@ -49,6 +49,10 @@ class Yomiage {
               name: 'ストップ',
               value: 'stop',
             },
+            {
+              name: 'シャッフル',
+              value: 'shuffle',
+            },
           ],
         },
       ],
@@ -103,7 +107,7 @@ class Yomiage {
     _: Client<boolean>
   ) => {
     try {
-      type Command = 'start' | 'stop'
+      type Command = 'start' | 'stop' | 'shuffle'
       const command = (i.options as CommandInteractionOptionResolver).getString(
         'command'
       ) as Command
@@ -135,6 +139,10 @@ class Yomiage {
           await i.editReply({
             content: '\n読み上げを終了します。',
           })
+          break
+        case 'shuffle':
+          this._clearUserSpeakerMap()
+          break
       }
     } catch (error) {
       console.error(error)
@@ -174,12 +182,12 @@ class Yomiage {
     return c
   }
 
-  private async _destory() {
+  private _destory() {
     if (!this.connection) return
     this.connection.destroy()
     this.connection = null
   }
-  public async playAudio() {
+  public playAudio() {
     if (!this.connection) return
 
     const resource = createAudioResource(this.filePath, {
@@ -191,7 +199,7 @@ class Yomiage {
     this.connection.subscribe(this.player)
   }
 
-  private _validateToPlay = async (
+  private _validateToPlay = (
     i: CommandInteraction<CacheType>,
     vc: VoiceBasedChannel
   ) => {

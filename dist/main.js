@@ -110,7 +110,7 @@ client.on('messageCreate', async (message) => {
         channelId !== '1006967489881718836') {
         return;
     }
-    let text = message.content;
+    const text = message.content;
     (0, child_process_1.exec)('rm audio.wav');
     const userID = message.author.id;
     const speakerId = yomiage_1.default.setSpeakerIdByUserIdIfNotExist(userID);
