@@ -113,6 +113,9 @@ class Yomiage {
                     break;
                 case 'shuffle':
                     this._clearUserSpeakerMap();
+                    await i.editReply({
+                        content: '\n読み上げボイスを初期化しました。',
+                    });
                     break;
             }
         }
