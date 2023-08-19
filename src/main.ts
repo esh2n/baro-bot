@@ -5,6 +5,8 @@ import {
   Interaction,
   TextChannel,
 } from 'discord.js'
+import { Player } from 'discord-player'
+
 import Yomiage from './commands/yomiage'
 import Stats from './commands/stats'
 import Ask from './commands/ask'
@@ -12,6 +14,7 @@ import Bo from './commands/bo'
 import Crosshair from './commands/crosshair'
 import Flower from './commands/flower'
 import Store from './commands/store'
+import Play from './commands/play'
 import { exec } from 'child_process'
 import http from 'http'
 import cron from 'node-cron'
@@ -27,6 +30,11 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 })
+export const player = new Player(client)
+
+player.events.on('playerStart', (queue, track) => {
+  queue.metadata.channel.send(`Started playing **${track.title}**!`)
+})
 
 http
   .createServer(function (_, response) {
@@ -37,6 +45,7 @@ http
 
 client.on('ready', async () => {
   console.log('Bot is ready.')
+  await player.extractors.loadDefault()
 
   const textChannel = client.channels.cache.find(
     (channel) => channel.id === '1006967319676846130'
@@ -46,7 +55,7 @@ client.on('ready', async () => {
     // 平日9時に実行
     cron.schedule(
       '0 9 * * 1-5',
-      async () => {
+      () => {
         Bo.bo(textChannel as TextChannel, '夜', client)
       },
       {
@@ -57,7 +66,7 @@ client.on('ready', async () => {
     // 土日10時に実行
     cron.schedule(
       '0 10 * * 0,6',
-      async () => {
+      () => {
         Bo.bo(textChannel as TextChannel, '終日', client)
       },
       {
@@ -96,6 +105,12 @@ client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
       break
     case 'register':
       await Store.handleRegister(interaction, client)
+      break
+    case 'play':
+      await Play.handlePlay(interaction, client)
+      break
+    case 'play-stop':
+      await Play.handlePlayStop(interaction, client)
       break
     default:
       break
@@ -163,9 +178,11 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         // VCに1人だけいる場合
         const vcName = voiceChannel!.name
         if (vcName === 'VALORANT' || vcName === '雑談') {
-          let guild = client.guilds.cache.get('1005117753960693863')
+          const guild = client.guilds.cache.get('1005117753960693863')
           if (!guild) return
-          let role = guild.roles.cache.find((role) => role.name === 'VALORANT')
+          const role = guild.roles.cache.find(
+            (role) => role.name === 'VALORANT'
+          )
           if (!role) return
           ;(textChannel as TextChannel).send(
             `<@&${role.id}> ${
