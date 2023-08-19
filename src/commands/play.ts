@@ -156,6 +156,7 @@ class Play {
           client: i.guild.members.me,
           requestedBy: i.user,
         },
+        volume: 0.15,
         leaveOnEmpty: true,
         leaveOnEmptyCooldown: 60000,
         leaveOnEnd: true,
