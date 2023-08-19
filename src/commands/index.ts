@@ -9,6 +9,7 @@ import Flower from './flower'
 import Stats from './stats'
 import Yomiage from './yomiage'
 import Store from './store'
+import Play from './play'
 
 export type RawCommand = {
   name: string
@@ -16,7 +17,7 @@ export type RawCommand = {
   options?: ApplicationCommandOption[]
 }
 
-const getCommands = async (): Promise<RawCommand[]> => {
+const getCommands = (): RawCommand[] => {
   return [
     Ask.command,
     Bo.command,
@@ -26,6 +27,8 @@ const getCommands = async (): Promise<RawCommand[]> => {
     Yomiage.command,
     Store.registerCommand,
     Store.storeCommand,
+    Play.playCommand,
+    Play.playStopCommand,
   ]
 }
 

@@ -12,7 +12,8 @@ const flower_1 = __importDefault(require("./flower"));
 const stats_1 = __importDefault(require("./stats"));
 const yomiage_1 = __importDefault(require("./yomiage"));
 const store_1 = __importDefault(require("./store"));
-const getCommands = async () => {
+const play_1 = __importDefault(require("./play"));
+const getCommands = () => {
     return [
         ask_1.default.command,
         bo_1.default.command,
@@ -22,6 +23,8 @@ const getCommands = async () => {
         yomiage_1.default.command,
         store_1.default.registerCommand,
         store_1.default.storeCommand,
+        play_1.default.playCommand,
+        play_1.default.playStopCommand,
     ];
 };
 const waitSeconds = (second) => {

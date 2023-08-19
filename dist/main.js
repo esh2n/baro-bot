@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.player = void 0;
 const discord_js_1 = require("discord.js");
+const discord_player_1 = require("discord-player");
 const yomiage_1 = __importDefault(require("./commands/yomiage"));
 const stats_1 = __importDefault(require("./commands/stats"));
 const ask_1 = __importDefault(require("./commands/ask"));
@@ -11,6 +13,7 @@ const bo_1 = __importDefault(require("./commands/bo"));
 const crosshair_1 = __importDefault(require("./commands/crosshair"));
 const flower_1 = __importDefault(require("./commands/flower"));
 const store_1 = __importDefault(require("./commands/store"));
+const play_1 = __importDefault(require("./commands/play"));
 const child_process_1 = require("child_process");
 const http_1 = __importDefault(require("http"));
 const node_cron_1 = __importDefault(require("node-cron"));
@@ -24,6 +27,10 @@ const client = new discord_js_1.Client({
         discord_js_1.GatewayIntentBits.MessageContent,
     ],
 });
+exports.player = new discord_player_1.Player(client);
+exports.player.events.on('playerStart', (queue, track) => {
+    queue.metadata.channel.send(`Started playing **${track.title}**!`);
+});
 http_1.default
     .createServer(function (_, response) {
     response.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -32,15 +39,16 @@ http_1.default
     .listen(process.env.PORT);
 client.on('ready', async () => {
     console.log('Bot is ready.');
+    await exports.player.extractors.loadDefault();
     const textChannel = client.channels.cache.find((channel) => channel.id === '1006967319676846130');
     if (textChannel) {
-        node_cron_1.default.schedule('0 9 * * 1-5', async () => {
+        node_cron_1.default.schedule('0 9 * * 1-5', () => {
             bo_1.default.bo(textChannel, '夜', client);
         }, {
             scheduled: true,
             timezone: 'Asia/Tokyo',
         });
-        node_cron_1.default.schedule('0 10 * * 0,6', async () => {
+        node_cron_1.default.schedule('0 10 * * 0,6', () => {
             bo_1.default.bo(textChannel, '終日', client);
         }, {
             scheduled: true,
@@ -76,6 +84,12 @@ client.on('interactionCreate', async (interaction) => {
             break;
         case 'register':
             await store_1.default.handleRegister(interaction, client);
+            break;
+        case 'play':
+            await play_1.default.handlePlay(interaction, client);
+            break;
+        case 'play-stop':
+            await play_1.default.handlePlayStop(interaction, client);
             break;
         default:
             break;
@@ -130,10 +144,10 @@ client.on('voiceStateUpdate', (oldState, newState) => {
             if (voiceChannel.members.size === 1) {
                 const vcName = voiceChannel.name;
                 if (vcName === 'VALORANT' || vcName === '雑談') {
-                    let guild = client.guilds.cache.get('1005117753960693863');
+                    const guild = client.guilds.cache.get('1005117753960693863');
                     if (!guild)
                         return;
-                    let role = guild.roles.cache.find((role) => role.name === 'VALORANT');
+                    const role = guild.roles.cache.find((role) => role.name === 'VALORANT');
                     if (!role)
                         return;
                     textChannel.send(`<@&${role.id}> ${newState.member.nickname || newState.member.user.username}さんがVC「${vcName}」であなたを待っています。可哀想なので参加してあげましょう。`);
