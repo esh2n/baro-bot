@@ -141,7 +141,7 @@ class Yomiage {
           })
           break
         case 'shuffle':
-          this._destory()
+          await i.deferReply()
           this._clearUserSpeakerMap()
           await i.editReply({
             content: '\n読み上げボイスを初期化しました。',
