@@ -118,6 +118,7 @@ class Play {
       metadata: {
         channel: memberVC,
       },
+      volume: 0.6,
     })
 
     try {
@@ -156,7 +157,7 @@ class Play {
           client: i.guild.members.me,
           requestedBy: i.user,
         },
-        volume: 0.15,
+        volume: 0.6,
         leaveOnEmpty: true,
         leaveOnEmptyCooldown: 60000,
         leaveOnEnd: true,
